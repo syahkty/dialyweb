@@ -87,29 +87,28 @@ $result = $conn->query($query);
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-200 transition-all duration-300">
     
     <!-- Navbar -->
-    <nav class="fixed top-0 left-0 w-full bg-white dark:bg-gray-800 bg-opacity-70 dark:bg-opacity-70 backdrop-blur-lg shadow-md py-3 px-6 flex justify-between items-center">
+    <nav class="fixed top-0 left-0 w-full bg-white dark:bg-gray-800 bg-opacity-70 dark:bg-opacity-70 backdrop-blur-lg shadow-md py-3 px-6 flex justify-between items-center z-50">
         <h1 class="text-xl font-bold">Dashboard Harian</h1>
         <button onclick="toggleDarkMode()" class="text-2xl focus:outline-none transition">
             <span id="darkModeIcon">🌙</span>
         </button>
     </nav>
 
-    <div class="mt-10 flex flex-col items-center justify-center">
-    <h2 class="text-2xl font-bold pt-14 pb-2 flex items-center gap-2">
+    <div class="mt-10 flex flex-col items-center justify-center mx-10">
+    <h2 class="text-2xl font-bold pt-14 pb-4 flex items-center gap-2">
         📅 Jadwal Besok (<?= $namaHariEsok ?>)
     </h2>
     
-    <div class="glassmorphism p-6 shadow-lg w-full max-w-lg rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900">
         <?php if ($result->num_rows > 0): ?>
-            <ul class="space-y-4">
+            <ul class="space-y-6">
                 <?php while ($row = $result->fetch_assoc()): ?>
-                    <li class="flex items-center gap-4 bg-gray-100 dark:bg-gray-800 shadow p-4 rounded-lg hover:scale-105 transform transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
+                    <li class="flex items-center gap-6 bg-gray-100 dark:bg-gray-800 shadow p-4 rounded-lg hover:scale-105 transform transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
                         <span class="text-3xl">📖</span> <!-- Ikon Buku -->
                         <div>
                             <p class="text-lg font-semibold"><?= $row['course_name'] ?></p>
                             <div class="text-sm text-gray-600 dark:text-gray-300 flex gap-2">
                                 🕒 <span class="bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-2 py-1 rounded-md">
-                                    <?= $row['start_time'] ?> - <?= $row['end_time'] ?>
+                                <?= date('H:i', strtotime($row['start_time'])) ?> - <?= date('H:i', strtotime($row['end_time'])) ?>
                                 </span>
                                 📍 <span class="bg-green-300 dark:bg-green-600 text-black dark:text-white px-2 py-1 rounded-md">
                                     <?= $row['room'] ?>
@@ -122,7 +121,7 @@ $result = $conn->query($query);
         <?php else: ?>
             <p class="text-gray-500 dark:text-gray-400 text-center">❌ Tidak ada jadwal kuliah besok.</p>
         <?php endif; ?>
-    </div>
+
 </div>
 
     <!-- Konten -->

@@ -3,7 +3,7 @@ name: Deploy to cPanel via FTP
 on:
   push:
     branches:
-      - main  # Sesuaikan dengan branch utama
+      - main # Sesuaikan dengan branch utama
 
 jobs:
   deploy:
@@ -19,4 +19,4 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./
-          server-dir: /public_html/
+          server-dir: syahkty.web.id/htdocs/

@@ -91,6 +91,7 @@ $schedules = $conn->query("SELECT * FROM schedule");
         </button>
     </div>
 
+    <a href="index.html" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md mb-6 inline-block">⬅ Kembali</a>
     <!-- Form Tambah Tugas -->
     <form method="POST" class="bg-white dark:bg-gray-800 p-6 rounded-md shadow-md flex flex-col gap-4">
         <input type="text" name="title" placeholder="Judul Tugas" required 

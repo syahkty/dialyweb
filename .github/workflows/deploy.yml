@@ -1,9 +1,9 @@
-name: Deploy to cPanel via FTP
+name: Deploy ke CPanel via FTP
 
 on:
   push:
     branches:
-      - main # Sesuaikan dengan branch utama
+      - main  # Sesuaikan dengan branch utama repository kamu
 
 jobs:
   deploy:
@@ -12,11 +12,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Upload via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4
+      - name: Deploy ke CPanel via FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
         with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./
-          server-dir: syahkty.web.id/htdocs/
+          server: ftp.yourdomain.com  # Ganti dengan FTP server kamu
+          username: ${{ secrets.FTP_USERNAME }}  # Simpan username di GitHub Secrets
+          password: ${{ secrets.FTP_PASSWORD }}  # Simpan password di GitHub Secrets
+          local-dir: ./  # Folder yang akan di-upload, bisa sesuaikan
+          server-dir: /syahkty.web.id/htdocs  # Direktori tujuan di server CPanel

@@ -19,4 +19,4 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}  # Simpan username di GitHub Secrets
           password: ${{ secrets.FTP_PASSWORD }}  # Simpan password di GitHub Secrets
           local-dir: ./  # Folder yang akan di-upload, bisa sesuaikan
-          server-dir: /syahkty.web.id/htdocs  # Direktori tujuan di server CPanel
+          server-dir: ./syahkty.web.id/htdocs/  # Direktori tujuan di server CPanel

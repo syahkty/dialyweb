@@ -95,7 +95,28 @@ if (isset($_POST['update_schedule'])) {
         }
     </script>
 </head>
-<body class="bg-gray-900 text-white p-8 dark:bg-white dark:text-black transition-colors duration-300">
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Mata Kuliah</title>
+    <script>
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            document.getElementById('darkModeIcon').textContent = document.documentElement.classList.contains('dark') ? '🌞' : '🌙';
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('darkModeIcon').textContent = '🌞';
+            }
+        });
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-black p-8 dark:bg-gray-900 dark:text-white transition-colors duration-300">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-center">📅 Jadwal Mata Kuliah</h1>
         <button onclick="toggleDarkMode()" class="text-2xl focus:outline-none transition">
@@ -105,25 +126,20 @@ if (isset($_POST['update_schedule'])) {
 
     <a href="index.html" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md mb-6 inline-block">⬅ Kembali</a>
 
-    <!-- Form Tambah / Edit Jadwal -->
-    <div class="bg-gray-800 dark:bg-gray-300 p-6 rounded-lg shadow-lg mb-6">
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
         <form method="POST" class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2">
             <input type="hidden" name="id" value="<?= $edit_id ?>">
-            <input type="text" name="course_name" placeholder="Mata Kuliah" required class="bg-gray-700 dark:bg-white border p-3 rounded-md"
-                   value="<?= $edit_data['course_name'] ?>">
-
-            <select name="day" required class="bg-gray-700 dark:bg-white border p-3 rounded-md">
+            <input type="text" name="course_name" placeholder="Mata Kuliah" required class="bg-gray-200 dark:bg-gray-700 border p-3 rounded-md" value="<?= $edit_data['course_name'] ?>">
+            <select name="day" required class="bg-gray-200 dark:bg-gray-700 border p-3 rounded-md">
                 <option value="Senin" <?= $edit_data['day'] == "Senin" ? "selected" : "" ?>>Senin</option>
                 <option value="Selasa" <?= $edit_data['day'] == "Selasa" ? "selected" : "" ?>>Selasa</option>
                 <option value="Rabu" <?= $edit_data['day'] == "Rabu" ? "selected" : "" ?>>Rabu</option>
                 <option value="Kamis" <?= $edit_data['day'] == "Kamis" ? "selected" : "" ?>>Kamis</option>
                 <option value="Jumat" <?= $edit_data['day'] == "Jumat" ? "selected" : "" ?>>Jumat</option>
             </select>
-
-            <input type="time" name="start_time" required class="bg-gray-700 dark:bg-white border p-3 rounded-md" value="<?= $edit_data['start_time'] ?>">
-            <input type="time" name="end_time" required class="bg-gray-700 dark:bg-white border p-3 rounded-md" value="<?= $edit_data['end_time'] ?>">
-            <input type="text" name="room" placeholder="Ruangan" required class="bg-gray-700 dark:bg-white border p-3 rounded-md" value="<?= $edit_data['room'] ?>">
-
+            <input type="time" name="start_time" required class="bg-gray-200 dark:bg-gray-700 border p-3 rounded-md" value="<?= $edit_data['start_time'] ?>">
+            <input type="time" name="end_time" required class="bg-gray-200 dark:bg-gray-700 border p-3 rounded-md" value="<?= $edit_data['end_time'] ?>">
+            <input type="text" name="room" placeholder="Ruangan" required class="bg-gray-200 dark:bg-gray-700 border p-3 rounded-md" value="<?= $edit_data['room'] ?>">
             <div class="flex gap-2">
                 <?php if ($edit_id): ?>
                     <button type="submit" name="update_schedule" class="bg-green-500 hover:bg-green-600 text-white dark:text-black p-3 rounded-md">✔ Update</button>
@@ -134,18 +150,15 @@ if (isset($_POST['update_schedule'])) {
             </div>
         </form>
     </div>
-
-    <!-- Card Jadwal -->
+    
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
         <?php while ($row = $schedules->fetch_assoc()): ?>
-        <div class="bg-gray-800 dark:bg-gray-200 p-6 rounded-lg shadow-lg flex flex-col justify-between">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col justify-between">
             <div>
-                <h2 class="text-lg font-bold text-blue-400 dark:text-blue-600"><?= $row['course_name'] ?></h2>
-                <p class="text-gray-400 dark:text-gray-600"><?= $row['day'] ?> | ⏰ <?= $row['start_time'] ?> - <?= $row['end_time'] ?></p>
-                <p class="text-gray-300 dark:text-gray-700 mt-2">📍 Ruangan: <?= $row['room'] ?></p>
+                <h2 class="text-lg font-bold text-blue-600 dark:text-blue-400"><?= $row['course_name'] ?></h2>
+                <p class="text-gray-600 dark:text-gray-400"><?= $row['day'] ?> | ⏰ <?= $row['start_time'] ?> - <?= $row['end_time'] ?></p>
+                <p class="text-gray-700 dark:text-gray-300 mt-2">📍 Ruangan: <?= $row['room'] ?></p>
             </div>
-
-            <!-- Aksi (Edit & Hapus) di Bawah -->
             <div class="flex justify-between mt-4">
                 <a href="schedule.php?edit=<?= $row['id'] ?>" class="bg-yellow-500 hover:bg-yellow-600 text-white dark:text-black p-2 rounded-md flex-1 text-center mr-2">✏ Edit</a>
                 <a href="schedule.php?delete=<?= $row['id'] ?>" class="bg-red-500 hover:bg-red-600 text-white dark:text-black p-2 rounded-md flex-1 text-center">🗑 Hapus</a>
@@ -153,7 +166,6 @@ if (isset($_POST['update_schedule'])) {
         </div>
         <?php endwhile; ?>
     </div>
-
 </body>
 </html>
 

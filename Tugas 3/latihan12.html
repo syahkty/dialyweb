@@ -1,0 +1,156 @@
+<html>
+  <head>
+    <title>Halaman 2</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body class="halaman2">
+    <div id="header"></div>
+    <div class="page">
+      <div id="code_asli">
+        <h2>From Biasa</h2>
+        <form action="submit">
+            First Name:
+            <input type="text" name="firstame">
+            <br>
+            Last Name:
+            <input type="text" name="lastname">
+            <br>
+            <input type="submit" value="Submit">
+            <input type="reset" value="Reset">
+        </form>
+        <hr>
+        <h2>Input Password</h2>
+        <form action="submit">
+            First Name:
+            <input type="text" name="firstame">
+            <br>
+            Last Name:
+            <input type="password" name="lastname">
+            <br>
+            <input type="submit" value="Submit">
+            <input type="reset" value="Reset">
+        </form>
+        <hr>
+        <h2>Radio Button</h2>
+        <form action="submit">
+            <label for="firstame">Male :</label>
+            <input type="radio" name="firstame">
+            <br>
+
+            <label for="lastname">Female :</label>
+            <input type="radio" name="firstame">
+            <br>
+            <input type="submit" value="Submit">
+            <input type="reset" value="Reset">
+        </form>
+        <hr>
+        <h2>Checkbox</h2>
+        <form action="submit">
+            Sepeda:
+            <input type="checkbox" name="vehicle" value="sepeda">
+            <br>
+            Motor:
+            <input type="checkbox" name="vehicle" value="Motor">
+            <br>
+            Mobil:
+            <input type="checkbox" name="vehicle" value="Mobil">
+            <br>
+            Pesawat Terbang:
+            <input type="checkbox" name="vehicle" value="pesawat">
+            <br>
+            <input type="submit" value="Submit">
+            <input type="reset" value="Reset">
+        </form>
+        <hr>
+        <h2>Option</h2>
+        <select name="kendaraan">
+            <option value="" selected> Pilih Kendaraan </option>
+            <option value="sepeda">Sepeda</option>
+            <option value="motor">Motor</option>
+            <option value="mobil">Mobil</option>
+            <option value="pesawat">Pesawat Terbang</option>
+            <br>
+            <input type="submit" value="Submit">
+            <input type="reset" value="Reset">
+        </select>
+        <br>
+        <br>
+        <hr>
+        <h2>Option Mutiple</h2>
+        <select name="kendaraan" multiple>
+            <option value="" selected> Pilih Kendaraan </option>
+            <option value="sepeda">Sepeda</option>
+            <option value="motor">Motor</option>
+            <option value="mobil">Mobil</option>
+            <option value="pesawat">Pesawat Terbang</option>
+            <br>
+            <input type="submit" value="Submit">
+            <input type="reset" value="Reset">
+        </select>
+        <hr>
+
+        <h2>Textarea</h2>
+        <form action="submit">
+            Tuliskan Komentar Kelas : <br>
+            <textarea rows="3" cols="50" name="komentar">
+                Sekarang saya sedang mempelajari topik HTML lanjut pada kuliah pemrograman web.
+            </textarea>
+            <br>
+            <input type="submit" value="Submit">
+            <input type="reset" value="Reset">
+        </form>
+        <hr>
+        <h2>Upload File</h2>
+        Upload Gambar : <input type="file" name="gambar">
+        <br>
+        <input type="submit" value="Submit">
+        <input type="reset" value="Reset">
+        <br>
+        <hr>
+        <h1>Atribut Form</h1>
+        <form action="proses.php" method="post">
+            Nama :
+            <input type="text">
+            <br>
+            Password :
+            <input type="password">
+            <br>
+            <input type="submit" value="submit">  
+        </form>
+        <br>
+        <hr>
+        <h1>Atribut Form</h1>
+        <form action="proses.php" method="post">
+            Nama :
+            <input type="text">
+            <br>
+            Password :
+            <input type="password">
+            <br>
+            <input type="submit" value="Submit">
+            <input type="reset" value="Reset">
+        </form>
+        <br>
+        <hr>
+        <h1>Atribut Form</h1>
+        <form action="proses.php" method="post">
+            Nama :
+            <input type="text">
+            <br>
+            Password :
+            <input type="password">
+            <br>
+
+            <input type="submit" value="Submit">
+            <input type="reset" value="Reset">
+
+        </form>
+        
+      </div>
+      <!-- bagian source code -->
+      <button class="close-btn" onclick="closeCode()">X</button>
+      <code id="hasil_konversi"></code>
+      <script src="/convertHTMLToSpans.js"></script>
+    </div>
+  </body>
+</html>

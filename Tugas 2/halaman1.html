@@ -1,0 +1,53 @@
+<html>
+  <head>
+    <title>Halaman 1</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body class="halaman1">
+    <div class="time" id="timeDisplay">
+      <!-- Waktu akan ditampilkan di sini -->
+    </div>
+    <h1>Andi Syahkty Alifah Assalam</h1>
+    <p>NIM : F52123043</p>
+    <p>Kelas : SI B</p> <br>
+    <a href="/Tugas 1/index.html" target="halaman2">6 Februari 2025 | Tugas 1<br>
+    <a href="/Tugas 2/latihan6.html" target="halaman2">13 Februari 2025 | Tugas 2</a> <br>
+    <a href="../Tugas%203/latihan11.html" target="halaman2">27 Februari 2025 | Tugas 3</a>
+      <script>
+      function updateTime() {
+        // Mendapatkan waktu saat ini
+        const now = new Date();
+
+              // Daftar nama bulan
+      const months = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      ];
+
+        // Format waktu: Hari, Bulan, Tahun
+        const day = now.getDate().toString().padStart(2, "0");
+        const month = months[now.getMonth()]; // Mengambil nama bulan
+        const year = now.getFullYear();
+
+        // Format waktu: Jam, Menit, Detik
+        const hours = now.getHours().toString().padStart(2, "0");
+        const minutes = now.getMinutes().toString().padStart(2, "0");
+        const seconds = now.getSeconds().toString().padStart(2, "0");
+
+        // Menampilkan waktu dan tanggal
+        const formattedTime = `${hours}:${minutes}:${seconds}`;
+        const formattedDate = `${day}  ${month}  ${year}`;
+
+        document.getElementById(
+          "timeDisplay"
+        ).innerHTML = `${formattedDate} ${formattedTime}`;
+      }
+
+      // Memperbarui waktu setiap detik
+      setInterval(updateTime, 1000);
+
+      // Memanggil fungsi updateTime untuk pertama kali
+      updateTime();
+    </script>
+  </body>
+</html>

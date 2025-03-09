@@ -53,6 +53,14 @@ $schedules = $conn->query("SELECT * FROM schedule");
                 console.log("Light mode diaktifkan.");
             }
         });
+        //         // Periksa preferensi mode saat halaman dimuat
+        //         document.addEventListener("DOMContentLoaded", () => {
+        //     if (localStorage.getItem("theme") === "dark") {
+        //         document.documentElement.classList.add("dark");
+        //     } else {
+        //         document.documentElement.classList.remove("dark");
+        //     }
+        // });
 
         function toggleDarkMode() {
             console.log("Tombol diklik.");
@@ -70,28 +78,9 @@ $schedules = $conn->query("SELECT * FROM schedule");
             }
         }
     </script>
-    <script>
-        // Simpan preferensi mode di localStorage
-        function toggleTheme() {
-            const htmlElement = document.documentElement;
-            htmlElement.classList.toggle("dark");
 
-            if (htmlElement.classList.contains("dark")) {
-                localStorage.setItem("theme", "dark");
-            } else {
-                localStorage.setItem("theme", "light");
-            }
-        }
 
-        // Periksa preferensi mode saat halaman dimuat
-        document.addEventListener("DOMContentLoaded", () => {
-            if (localStorage.getItem("theme") === "dark") {
-                document.documentElement.classList.add("dark");
-            } else {
-                document.documentElement.classList.remove("dark");
-            }
-        });
-    </script>
+
 </head>
 <body class="p-6 bg-gray-100 dark:bg-gray-900 dark:text-white transition-colors duration-300">
 

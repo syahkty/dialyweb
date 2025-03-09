@@ -5,37 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Proyek</title>
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-900 text-white">
+    <script>
+        // Konfigurasi Tailwind agar dark mode pakai class
+        tailwind.config = {
+            darkMode: 'class'
+        };
 
-    <div class="container mx-auto p-6">
-        <h1 class="text-3xl font-bold text-center mb-6">📌 Daftar Proyek</h1>
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("Halaman dimuat.");
+            
+            // Cek preferensi mode gelap dari localStorage
+            const theme = localStorage.getItem("theme");
+            console.log("Tema dari localStorage:", theme);
+            
+            if (theme === "dark") {
+                document.documentElement.classList.add("dark");
+                document.getElementById("darkModeIcon").innerHTML = "☀️";
+                console.log("Dark mode diaktifkan.");
+            } else {
+                document.documentElement.classList.remove("dark");
+                document.getElementById("darkModeIcon").innerHTML = "🌙";
+                console.log("Light mode diaktifkan.");
+            }
+        });
+
+        function toggleDarkMode() {
+            console.log("Tombol diklik.");
+            
+            if (document.documentElement.classList.contains("dark")) {
+                document.documentElement.classList.remove("dark");
+                localStorage.setItem("theme", "light");
+                document.getElementById("darkModeIcon").innerHTML = "🌙";
+                console.log("Dark mode dimatikan, tema disimpan: light.");
+            } else {
+                document.documentElement.classList.add("dark");
+                localStorage.setItem("theme", "dark");
+                document.getElementById("darkModeIcon").innerHTML = "☀️";
+                console.log("Dark mode diaktifkan, tema disimpan: dark.");
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 w-full bg-white dark:bg-gray-800 bg-opacity-70 dark:bg-opacity-70 backdrop-blur-lg shadow-md py-3 px-6 flex justify-between items-center z-50">
+        <h1 class="text-xl font-bold text-gray-800 dark:text-gray-200">📌 Daftar Proyek</h1>
+        <button onclick="toggleDarkMode()" class="text-2xl focus:outline-none transition">
+            <span id="darkModeIcon">🌙</span>
+        </button>
+    </nav>
+
+    <div class="container mx-auto p-6 mt-16">
+
         <a href="index.php" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md mb-6 inline-block">⬅ Kembali</a>
+
         <!-- Grid Card -->
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             
             <!-- Card 1 -->
-            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h2 class="text-2xl font-semibold">Pemrograman Web</h2>
-                <p class="text-gray-400 mt-2">Tugas Pemrograman Web</p>
-                <a href="/Tugas%202/latihan5.html" class="block bg-blue-500 hover:bg-blue-600 text-white text-center p-3 rounded-lg mt-4">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg transition hover:scale-105">
+                <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Pemrograman Web</h2>
+                <p class="text-gray-600 dark:text-gray-400 mt-2">Tugas Pemrograman Web</p>
+                <a href="/Project/Progweb/Tugas%202/latihan5.html" class="block bg-blue-500 hover:bg-blue-600 text-white text-center p-3 rounded-lg mt-4">
                     Lihat Proyek
                 </a>
             </div>
 
             <!-- Card 2 -->
-            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h2 class="text-2xl font-semibold">Hutang</h2>
-                <p class="text-gray-400 mt-2">Pencatatan Hutang Saya</p>
-                <a href="debts.php" class="block bg-blue-500 hover:bg-blue-600 text-white text-center p-3 rounded-lg mt-4">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg transition hover:scale-105">
+                <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Hutang</h2>
+                <p class="text-gray-600 dark:text-gray-400 mt-2">Pencatatan Hutang Saya</p>
+                <a href="Project/hutang/debts.php" class="block bg-blue-500 hover:bg-blue-600 text-white text-center p-3 rounded-lg mt-4">
                     Lihat Proyek
                 </a>
             </div>
 
             <!-- Card 3 -->
-            <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h2 class="text-2xl font-semibold">Proyek 3</h2>
-                <p class="text-gray-400 mt-2">Aplikasi Mobile untuk pemantauan hidrasi Smart Cup 2.0.</p>
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg transition hover:scale-105">
+                <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Proyek 3</h2>
+                <p class="text-gray-600 dark:text-gray-400 mt-2">Aplikasi Mobile untuk pemantauan hidrasi Smart Cup 2.0.</p>
                 <a href="proyek3.html" class="block bg-blue-500 hover:bg-blue-600 text-white text-center p-3 rounded-lg mt-4">
                     Lihat Proyek
                 </a>

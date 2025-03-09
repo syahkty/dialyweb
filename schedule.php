@@ -103,7 +103,7 @@ if (isset($_POST['update_schedule'])) {
         </button>
     </div>
 
-    <a href="index.html" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md mb-6 inline-block">⬅ Kembali</a>
+    <a href="index.php" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md mb-6 inline-block">⬅ Kembali</a>
 
     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
         <form method="POST" class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2">

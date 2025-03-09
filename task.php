@@ -31,6 +31,46 @@ $schedules = $conn->query("SELECT * FROM schedule");
     <title>Todo Tugas Kuliah</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+        // Konfigurasi Tailwind agar dark mode pakai class
+        tailwind.config = {
+            darkMode: 'class'
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("Halaman dimuat.");
+            
+            // Cek preferensi mode gelap dari localStorage
+            const theme = localStorage.getItem("theme");
+            console.log("Tema dari localStorage:", theme);
+            
+            if (theme === "dark") {
+                document.documentElement.classList.add("dark");
+                document.getElementById("darkModeIcon").innerHTML = "☀️";
+                console.log("Dark mode diaktifkan.");
+            } else {
+                document.documentElement.classList.remove("dark");
+                document.getElementById("darkModeIcon").innerHTML = "🌙";
+                console.log("Light mode diaktifkan.");
+            }
+        });
+
+        function toggleDarkMode() {
+            console.log("Tombol diklik.");
+            
+            if (document.documentElement.classList.contains("dark")) {
+                document.documentElement.classList.remove("dark");
+                localStorage.setItem("theme", "light");
+                document.getElementById("darkModeIcon").innerHTML = "🌙";
+                console.log("Dark mode dimatikan, tema disimpan: light.");
+            } else {
+                document.documentElement.classList.add("dark");
+                localStorage.setItem("theme", "dark");
+                document.getElementById("darkModeIcon").innerHTML = "☀️";
+                console.log("Dark mode diaktifkan, tema disimpan: dark.");
+            }
+        }
+    </script>
+    <script>
         // Simpan preferensi mode di localStorage
         function toggleTheme() {
             const htmlElement = document.documentElement;

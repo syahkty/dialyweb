@@ -5,17 +5,35 @@ include "../../config.php";
 if (isset($_POST['add_debt'])) {
     $amount = $_POST['amount'];
     $description = $_POST['description'];
+    $due_date = !empty($_POST['due_date']) ? $_POST['due_date'] : NULL; // Cek jika kosong
 
-    $sql = "INSERT INTO debts (amount, description) VALUES ('$amount', '$description')";
-    $conn->query($sql);
-    header("Location: debts.php");
+    // Gunakan prepared statement untuk keamanan
+    $stmt = $conn->prepare("INSERT INTO debts (amount, description, due_date) VALUES (?, ?, ?)");
+    $stmt->bind_param("dss", $amount, $description, $due_date);
+    
+    if ($stmt->execute()) {
+        header("Location: debts.php");
+        exit();
+    } else {
+        echo "Gagal menambahkan hutang!";
+    }
 }
+
 
 // Ambil Data Hutang Belum Lunas
 $pending_debts = $conn->query("SELECT * FROM debts WHERE status = 'Belum Lunas'");
 
+// Menghitung total hutang
+$total_hutang = 0;
+while ($row = $pending_debts->fetch_assoc()) {
+    $total_hutang += $row['amount'];
+    $debts[] = $row;
+}
+
 // Ambil Data Hutang Lunas
 $paid_debts = $conn->query("SELECT * FROM debts WHERE status = 'Lunas'");
+
+$totalPaid = 0;
 ?>
 
 <!DOCTYPE html>
@@ -82,31 +100,88 @@ $paid_debts = $conn->query("SELECT * FROM debts WHERE status = 'Lunas'");
         </div>
 
         <!-- Hutang Belum Lunas -->
-        <h2 class="text-xl font-bold mt-10 mb-4">💰 Hutang Belum Lunas</h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <?php while ($row = $pending_debts->fetch_assoc()): ?>
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h3 class="text-lg font-semibold">Rp <?= number_format($row['amount'], 2) ?></h3>
-                <p class="text-gray-500 dark:text-gray-400"><?= $row['description'] ?></p>
-                <div class="mt-4 flex justify-start">
-                    <a href="edit_debt.php?id=<?= $row['id'] ?>" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2">✏ Edit</a>
-                    <a href="mark_paid.php?id=<?= $row['id'] ?>" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">✔ Lunas</a>
-                </div>
-            </div>
-            <?php endwhile; ?>
+        <div class="max-w-full mx-auto mt-10 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold mb-4 flex items-center gap-2">
+            💰 Hutang Belum Lunas
+        </h2>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white dark:bg-gray-900 shadow-md rounded-lg overflow-hidden">
+                <thead>
+                    <tr class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                        <th class="py-3 px-4 text-left">💲 Jumlah</th>
+                        <th class="py-3 px-4 text-left">📌 Keterangan</th>
+                        <th class="py-3 px-4 text-left">📅 Tanggal Jatuh Tempo</th>
+                        <th class="py-3 px-4 text-center">⚙ Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (!empty($debts)): ?>
+                        <?php foreach ($debts as $row): ?>
+                        <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <td class="py-3 px-4 font-semibold">Rp <?= number_format($row['amount'], 2) ?></td>
+                            <td class="py-3 px-4"><?= htmlspecialchars($row['description']) ?></td>
+                            <td class="py-3 px-4"><?= date('d M Y', strtotime($row['due_date'])) ?></td>
+                            <td class="py-3 px-4 text-center">
+                                <a href="edit_debt.php?id=<?= $row['id'] ?>" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2">✏ Edit</a>
+                                <a href="mark_paid.php?id=<?= $row['id'] ?>" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">✔ Lunas</a>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="4" class="py-4 px-4 text-center text-gray-500 dark:text-gray-400">
+                                ❌ Tidak ada hutang yang belum lunas.
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+                <?php if (!empty($debts)): ?>
+                <tfoot>
+                    <tr class="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-200 font-bold">
+                        <td colspan="2" class="py-3 px-4 text-left">💰 Total Hutang:</td>
+                        <td class="py-3 px-4">Rp <?= number_format($total_hutang, 2) ?></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+                <?php endif; ?>
+            </table>
         </div>
+    </div>
 
         <!-- Hutang Lunas -->
-        <h2 class="text-xl font-bold mt-10 mb-4">✅ Hutang Lunas</h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <?php while ($row = $paid_debts->fetch_assoc()): ?>
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h3 class="text-lg font-semibold text-green-500">Rp <?= number_format($row['amount'], 2) ?></h3>
-                <p class="text-gray-500 dark:text-gray-400"><?= $row['description'] ?></p>
-            </div>
-            <?php endwhile; ?>
-        </div>
+<h2 class="text-xl font-bold mt-10 mb-4">✅ Hutang Lunas</h2>
 
+<div class="overflow-x-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+    <table class="w-full border-collapse">
+        <thead>
+            <tr class="bg-green-500 text-white">
+                <th class="p-3 text-left">Jumlah</th>
+                <th class="p-3 text-left">Keterangan</th>
+                <th class="p-3 text-left">Jatuh Tempo</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php while ($row = $paid_debts->fetch_assoc()): 
+                $totalPaid += $row['amount']; // Tambahkan ke total
+            ?>
+            <tr class="border-b dark:border-gray-700">
+                <td class="p-3 text-green-500 font-semibold">Rp <?= number_format($row['amount'], 2) ?></td>
+                <td class="p-3"><?= htmlspecialchars($row['description']) ?></td>
+                <td class="p-3">
+                    <?= !empty($row['due_date']) ? date("d M Y", strtotime($row['due_date'])) : '-' ?>
+                </td>
+            </tr>
+            <?php endwhile; ?>
+        </tbody>
+        <tfoot>
+            <tr class="bg-green-100 dark:bg-green-900 font-bold">
+                <td class="p-3">Total</td>
+                <td colspan="2" class="p-3 text-green-500">Rp <?= number_format($totalPaid, 2) ?></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
     </div>
 
 </body>

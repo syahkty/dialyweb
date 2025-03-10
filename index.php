@@ -168,7 +168,7 @@ $result = $stmt->get_result();
         </a>
         
         <!-- Hanya tampil jika user_id = 2 -->
-        <?php if ($user_id == 2): ?>
+        <?php if ($user_id == 1): ?>
             <a href="project.html" class="glassmorphism p-6 text-gray-800 dark:text-gray-200 shadow-lg hover:scale-105 transform transition-all">
                 <div class="flex items-center gap-3">
                     <span class="text-3xl">🛠️</span>

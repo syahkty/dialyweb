@@ -1,5 +1,14 @@
 <?php
 include "config.php";
+session_start();
+
+// Pastikan user sudah login
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$user_id = $_SESSION['user_id'];
 
 // Tambah Jadwal
 if (isset($_POST['add_schedule'])) {
@@ -9,28 +18,40 @@ if (isset($_POST['add_schedule'])) {
     $end_time = $_POST['end_time'];
     $room = $_POST['room'];
 
-    $sql = "INSERT INTO schedule (day, course_name, start_time, end_time, room) 
-            VALUES ('$day', '$course_name', '$start_time', '$end_time', '$room')";
+    $sql = "INSERT INTO schedule (day, course_name, start_time, end_time, room, user_id) 
+            VALUES ('$day', '$course_name', '$start_time', '$end_time', '$room', '$user_id')";
     $conn->query($sql);
     header("Location: schedule.php");
+    exit();
 }
 
 // Hapus Jadwal
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
-    $conn->query("DELETE FROM schedule WHERE id = $id");
+    $stmt = $conn->prepare("DELETE FROM schedule WHERE id = ? AND user_id = ?");
+    $stmt->bind_param("ii", $id, $user_id);
+    $stmt->execute();
     header("Location: schedule.php");
+    exit();
 }
 
 // Ambil Data Jadwal
-$schedules = $conn->query("SELECT * FROM schedule ORDER BY FIELD(day, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat')");
+$stmt = $conn->prepare("SELECT * FROM schedule 
+                        WHERE user_id = ? 
+                        ORDER BY FIELD(day, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat')");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$schedules = $stmt->get_result();
 
 // Ambil Data untuk Edit
 $edit_id = "";
 $edit_data = ["day" => "", "course_name" => "", "start_time" => "", "end_time" => "", "room" => ""];
 if (isset($_GET['edit'])) {
     $edit_id = $_GET['edit'];
-    $result = $conn->query("SELECT * FROM schedule WHERE id = $edit_id");
+    $stmt = $conn->prepare("SELECT * FROM schedule WHERE id = ? AND user_id = ?");
+    $stmt->bind_param("ii", $edit_id, $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
     $edit_data = $result->fetch_assoc();
 }
 
@@ -43,11 +64,15 @@ if (isset($_POST['update_schedule'])) {
     $end_time = $_POST['end_time'];
     $room = $_POST['room'];
 
-    $sql = "UPDATE schedule SET day='$day', course_name='$course_name', start_time='$start_time', end_time='$end_time', room='$room' WHERE id='$id'";
-    $conn->query($sql);
+    $stmt = $conn->prepare("UPDATE schedule SET day=?, course_name=?, start_time=?, end_time=?, room=? 
+                            WHERE id=? AND user_id=?");
+    $stmt->bind_param("ssssiii", $day, $course_name, $start_time, $end_time, $room, $id, $user_id);
+    $stmt->execute();
     header("Location: schedule.php");
+    exit();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="id">

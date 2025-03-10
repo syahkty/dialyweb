@@ -2,26 +2,44 @@
 include "config.php";
 session_start();
 
+// Pastikan user sudah login
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$user_id = $_SESSION['user_id'];
+
 // Tambah Tugas
 if (isset($_POST['add_task'])) {
     $title = $_POST['title'];
     $due_date = $_POST['due_date'];
     $schedule_id = $_POST['schedule_id'];
 
-    $sql = "INSERT INTO tasks (title, due_date, schedule_id) VALUES ('$title', '$due_date', '$schedule_id')";
+    $sql = "INSERT INTO tasks (title, due_date, schedule_id, user_id) 
+            VALUES ('$title', '$due_date', '$schedule_id', '$user_id')";
     $conn->query($sql);
     header("Location: task.php");
+    exit();
 }
 
-// Ambil Data Tugas
-$pending_tasks = $conn->query("SELECT tasks.*, schedule.course_name FROM tasks 
-                               LEFT JOIN schedule ON tasks.schedule_id = schedule.id 
-                               WHERE tasks.status = 'Belum'");
+// Ambil Data Tugas Belum Selesai
+$stmt = $conn->prepare("SELECT tasks.*, schedule.course_name FROM tasks 
+                        LEFT JOIN schedule ON tasks.schedule_id = schedule.id 
+                        WHERE tasks.status = 'Belum' AND tasks.user_id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$pending_tasks = $stmt->get_result();
 
-$done_tasks = $conn->query("SELECT tasks.*, schedule.course_name FROM tasks 
-                            LEFT JOIN schedule ON tasks.schedule_id = schedule.id 
-                            WHERE tasks.status = 'Selesai'");
+// Ambil Data Tugas Selesai
+$stmt = $conn->prepare("SELECT tasks.*, schedule.course_name FROM tasks 
+                        LEFT JOIN schedule ON tasks.schedule_id = schedule.id 
+                        WHERE tasks.status = 'Selesai' AND tasks.user_id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$done_tasks = $stmt->get_result();
 
+// Ambil Semua Jadwal (opsional, bisa tetap global)
 $schedules = $conn->query("SELECT * FROM schedule");
 ?>
 

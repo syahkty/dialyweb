@@ -39,8 +39,11 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $done_tasks = $stmt->get_result();
 
-// Ambil Semua Jadwal (opsional, bisa tetap global)
-$schedules = $conn->query("SELECT * FROM schedule");
+// Query hanya mengambil jadwal milik user yang login
+$stmt = $conn->prepare("SELECT * FROM schedule WHERE user_id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$schedules = $stmt->get_result();
 ?>
 
 <!DOCTYPE html>

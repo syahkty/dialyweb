@@ -32,13 +32,20 @@ $hariSekarang = date('N');
 $hariEsok = ($hariSekarang == 7) ? 1 : $hariSekarang + 1;
 $namaHariEsok = $hariArray[$hariEsok];
 
+// Ambil 2 tugas dengan deadline terdekat berdasarkan user_id
+$query = "SELECT * FROM tasks WHERE user_id = ? AND status != 'Selesai' ORDER BY due_date ASC LIMIT 2";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$taskresult = $stmt->get_result();
+
 // Query untuk mengambil jadwal besok berdasarkan user_id
 $stmt = $conn->prepare("SELECT * FROM schedule WHERE day = ? AND user_id = ?");
 $stmt->bind_param("si", $namaHariEsok, $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
-?>
+
 
 <!DOCTYPE html>
 <html lang="id">
@@ -112,8 +119,10 @@ $result = $stmt->get_result();
 
     </nav>
 
-    <div class="mt-10 flex flex-col items-center justify-center mx-10">
-        <h2 class="text-2xl font-bold pt-14 pb-4 flex items-center gap-2">
+    <div class="mt-16 flex flex-col md:flex-row items-start justify-center gap-2">
+    <!-- Jadwal Besok -->
+    <div class="w-full md:w-5/12 max-w-md">
+        <h2 class="text-2xl font-bold pt-14 pb-4 flex items-center gap-2 justify-center text-center">
             📅 Jadwal Besok (<?= $namaHariEsok ?>)
         </h2>
 
@@ -139,8 +148,44 @@ $result = $stmt->get_result();
         <?php else: ?>
             <p class="text-gray-500 dark:text-gray-400 text-center">❌ Tidak ada jadwal kuliah besok.</p>
         <?php endif; ?>
-
     </div>
+
+    <!-- Tugas Terdekat -->
+    <div class="w-full md:w-5/12 max-w-md">
+        <h2 class="text-2xl font-bold pt-14 pb-4 flex items-center gap-2 justify-center text-center">
+            📌 Tugas Terdekat
+        </h2>
+
+        <?php if ($taskresult->num_rows > 0): ?>
+            <ul class="space-y-6">
+                <?php while ($row = $taskresult->fetch_assoc()): ?>
+                    <li class="flex items-center gap-6 bg-gray-100 dark:bg-gray-800 shadow p-4 rounded-lg hover:scale-105 transform transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
+                        <span class="text-3xl">📖</span> <!-- Ikon Buku -->
+                        <div>
+                            <p class="text-lg font-semibold"><?= htmlspecialchars($row['task_name']) ?></p>
+                            <div class="text-sm text-gray-600 dark:text-gray-300 flex gap-2">
+                                🏫 <span class="bg-blue-300 dark:bg-blue-600 text-black dark:text-white px-2 py-1 rounded-md">
+                                    <?= htmlspecialchars($row['course_name']) ?>
+                                </span>
+                                ⏳ <span class="bg-red-300 dark:bg-red-600 text-black dark:text-white px-2 py-1 rounded-md">
+                                    <?= date('d M Y', strtotime($row['due_date'])) ?>
+                                </span>
+                                ✅ <span class="bg-green-300 dark:bg-green-600 text-black dark:text-white px-2 py-1 rounded-md">
+                                    <?= ($row['status'] == 'done') ? 'Selesai' : 'Belum Selesai' ?>
+                                </span>
+                            </div>
+                        </div>
+                    </li>
+                <?php endwhile; ?>
+            </ul>
+        <?php else: ?>
+            <p class="text-gray-500 dark:text-gray-400 text-center">❌ Tidak ada tugas terdekat.</p>
+        <?php endif; ?>
+    </div>
+</div>
+
+
+
 
     <!-- Konten -->
     <div class="flex flex-col items-center justify-center p-10">

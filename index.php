@@ -32,12 +32,17 @@ $hariSekarang = date('N');
 $hariEsok = ($hariSekarang == 7) ? 1 : $hariSekarang + 1;
 $namaHariEsok = $hariArray[$hariEsok];
 
-// Ambil 2 tugas dengan deadline terdekat berdasarkan user_id
-$query = "SELECT * FROM tasks WHERE user_id = ? AND status != 'Selesai' ORDER BY due_date ASC LIMIT 2";
+$query = "SELECT tasks.*, schedule.course_name 
+          FROM tasks 
+          LEFT JOIN schedule ON tasks.schedule_id = schedule.id 
+          WHERE tasks.user_id = ? AND tasks.status != 'Selesai' 
+          ORDER BY tasks.due_date ASC 
+          LIMIT 2";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $taskresult = $stmt->get_result();
+
 
 // Query untuk mengambil jadwal besok berdasarkan user_id
 $stmt = $conn->prepare("SELECT * FROM schedule WHERE day = ? AND user_id = ?");
@@ -162,7 +167,7 @@ $result = $stmt->get_result();
                     <li class="flex items-center gap-6 bg-gray-100 dark:bg-gray-800 shadow p-4 rounded-lg hover:scale-105 transform transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
                         <span class="text-3xl">📖</span> <!-- Ikon Buku -->
                         <div>
-                            <p class="text-lg font-semibold"><?= htmlspecialchars($row['task_name']) ?></p>
+                            <p class="text-lg font-semibold"><?= htmlspecialchars($row['title']) ?></p>
                             <div class="text-sm text-gray-600 dark:text-gray-300 flex gap-2">
                                 🏫 <span class="bg-blue-300 dark:bg-blue-600 text-black dark:text-white px-2 py-1 rounded-md">
                                     <?= htmlspecialchars($row['course_name']) ?>

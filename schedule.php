@@ -143,7 +143,7 @@ if (isset($_POST['update_schedule'])) {
             </select>
             <input type="time" name="start_time" required class="bg-gray-200 dark:bg-gray-700 border p-3 rounded-md" value="<?= $edit_data['start_time'] ?>">
             <input type="time" name="end_time" required class="bg-gray-200 dark:bg-gray-700 border p-3 rounded-md" value="<?= $edit_data['end_time'] ?>">
-            <input type="text" name="room" placeholder="Ruangan" required class="bg-gray-200 dark:bg-gray-700 border p-3 rounded-md" value="<?= $edit_data['room'] ?>">
+            <input type="text" name="room" placeholder="Ruangan" required class="bg-gray-200 dark:bg-gray-700 border p-3 rounded-md" value="<?= $edit_data["room"]?>">
             <div class="flex gap-2">
                 <?php if ($edit_id): ?>
                     <button type="submit" name="update_schedule" class="bg-green-500 hover:bg-green-600 text-white dark:text-black p-3 rounded-md">✔ Update</button>

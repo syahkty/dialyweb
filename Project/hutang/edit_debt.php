@@ -1,5 +1,5 @@
 <?php
-include "config.php";
+include "../../config.php";
 
 // Ambil Data Hutang
 $id = $_GET['id'];

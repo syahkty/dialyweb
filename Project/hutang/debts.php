@@ -123,8 +123,8 @@ $totalPaid = 0;
                             <td class="py-3 px-4"><?= htmlspecialchars($row['description']) ?></td>
                             <td class="py-3 px-4"><?= date('d M Y', strtotime($row['due_date'])) ?></td>
                             <td class="py-3 px-4 text-center">
-                                <a href="edit_debt.php?id=<?= $row['id'] ?>" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2">✏ Edit</a>
-                                <a href="mark_paid.php?id=<?= $row['id'] ?>" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">✔ Lunas</a>
+                                <a href="edit_debt.php?id=<?= $row['id'] ?>" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2">Edit</a>
+                                <a href="mark_paid.php?id=<?= $row['id'] ?>" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">Lunas</a>
                             </td>
                         </tr>
                         <?php endforeach; ?>

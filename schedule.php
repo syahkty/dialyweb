@@ -64,9 +64,8 @@ if (isset($_POST['update_schedule'])) {
     $end_time = $_POST['end_time'];
     $room = $_POST['room'];
 
-    $stmt = $conn->prepare("UPDATE schedule SET day=?, course_name=?, start_time=?, end_time=?, room=? 
-                            WHERE id=? AND user_id=?");
-    $stmt->bind_param("ssssiii", $day, $course_name, $start_time, $end_time, $room, $id, $user_id);
+    $stmt = $conn->prepare("UPDATE schedule SET day=?, course_name=?, start_time=?, end_time=?, room=? WHERE id=? AND user_id=?");
+    $stmt->bind_param("sssssii", $day, $course_name, $start_time, $end_time, $room, $id, $user_id);
     $stmt->execute();
     header("Location: schedule.php");
     exit();

@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
 // Jika user_id = 2, maka grid 3 kolom, selain itu grid 2 kolom
-$gridClass = ($user_id == 2) ? "lg:grid-cols-3" : "lg:grid-cols-2";
+$gridClass = ($user_id == 1) ? "lg:grid-cols-3" : "lg:grid-cols-2";
 
 // Array nama hari
 $hariArray = [

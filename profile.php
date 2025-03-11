@@ -67,7 +67,7 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
     </script>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-    <div class="max-w-full mx-20 p-6">
+    <div class="max-w-full md:mx-full mx-20 p-6">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-center">📅 Profil</h1>
         <button onclick="toggleDarkMode()" class="text-2xl focus:outline-none transition">

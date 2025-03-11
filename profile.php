@@ -189,6 +189,17 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
         profilePic.addEventListener("touchstart", startPress);
         profilePic.addEventListener("touchend", cancelPress);
         profilePic.addEventListener("touchmove", cancelPress); // Jika jari digeser, batal
+
+
+    // Tutup Modal jika klik di luar
+    function closeModal() {
+        modal.classList.add("hidden");
+    }
+
+    // Upload otomatis setelah pilih file
+    fileInput.addEventListener("change", () => {
+        uploadSubmit.click();
+    });
     </script>
 </body>
 </html>

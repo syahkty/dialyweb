@@ -103,7 +103,7 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
         <!-- Pengaturan Akun -->
         <div class="mt-6 p-4 bg-white dark:bg-gray-800 shadow rounded-lg">
             <h3 class="text-lg font-semibold mb-4">Pengaturan Akun</h3>
-            <button onclick="toggleModal('reset-modal')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded mr-2">🔑 Reset Kata Sandi</button>
+            <button onclick="toggleModal('reset-modal')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 mb-2 rounded mr-2">🔑 Reset Kata Sandi</button>
             <button onclick="toggleModal('delete-modal')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">❌ Hapus Akun</button>
         </div>
     </div>

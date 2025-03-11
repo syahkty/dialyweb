@@ -119,7 +119,6 @@ $result = $stmt->get_result();
         <button onclick="toggleDarkMode()" class="text-2xl focus:outline-none transition mr-2">
             <span id="darkModeIcon">🌙</span>
         </button>
-        <a href="logout.php" class="bg-red-500 text-white p-2 rounded-md mb-4 inline-block">Logout</a>
         </div>
 
     </nav>

@@ -130,7 +130,7 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
             <div class="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 dark:border-gray-600">
         <img src="<?= $avatar ?>" alt="Foto Profil" class="w-full h-full object-cover" id="profilePicture">
     </div>
-                <span>Dashboard Harian, <?= htmlspecialchars($_SESSION['username']) ?></span>
+                <span>Dashboard Harian <?= htmlspecialchars($_SESSION['username']) ?></span>
             </a>
         </h1>
         <div>

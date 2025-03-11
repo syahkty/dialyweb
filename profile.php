@@ -75,12 +75,15 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
         </button>
     </div>
     <a href="index.php" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md mb-6 inline-block">⬅ Kembali</a>
-        <!-- Foto Profil -->
-        <div class="flex flex-col items-center space-y-4">
-            <img src="<?= $avatar ?>" alt="Foto Profil" class="w-32 h-32 rounded-full shadow-lg border-4 border-gray-300 dark:border-gray-600">
-            <h2 class="text-2xl font-bold"><?= htmlspecialchars($user['username']) ?></h2>
-            <p class="text-gray-600 dark:text-gray-400"><?= htmlspecialchars($user['email']) ?></p>
+    <!-- Foto Profil -->
+    <div class="flex flex-col items-center space-y-4">
+        <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-300 dark:border-gray-600">
+            <img src="<?= $avatar ?>" alt="Foto Profil" class="w-full h-full object-cover">
         </div>
+        <h2 class="text-2xl font-bold"><?= htmlspecialchars($user['username']) ?></h2>
+        <p class="text-gray-600 dark:text-gray-400"><?= htmlspecialchars($user['email']) ?></p>
+    </div>
+
         <!-- Form Upload Foto Profil -->
         <form action="upload_profile.php" method="POST" enctype="multipart/form-data" class="mt-2">
             <input type="file" name="profile_picture" accept="image/png, image/jpeg" class="block w-full text-sm text-gray-600 dark:text-gray-300">

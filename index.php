@@ -114,7 +114,7 @@ $result = $stmt->get_result();
     
     <!-- Navbar -->
     <nav class="fixed top-0 left-0 w-full bg-white dark:bg-gray-800 bg-opacity-70 dark:bg-opacity-70 backdrop-blur-lg shadow-md py-3 px-6 flex justify-between items-center z-50">
-        <h1 class="text-xl font-bold">Dashboard Harian, <?= $_SESSION['username'] ?></h1>
+        <h1 class="text-xl font-bold">Dashboard Harian, <a href="profile.php"><?= $_SESSION['username'] ?></a></h1>
         <div>
         <button onclick="toggleDarkMode()" class="text-2xl focus:outline-none transition mr-2">
             <span id="darkModeIcon">🌙</span>

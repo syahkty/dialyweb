@@ -75,20 +75,39 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
         </button>
     </div>
     <a href="index.php" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md mb-6 inline-block">⬅ Kembali</a>
-    <!-- Foto Profil -->
-    <div class="flex flex-col items-center space-y-4">
-        <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-300 dark:border-gray-600">
-            <img src="<?= $avatar ?>" alt="Foto Profil" class="w-full h-full object-cover">
-        </div>
-        <h2 class="text-2xl font-bold"><?= htmlspecialchars($user['username']) ?></h2>
-        <p class="text-gray-600 dark:text-gray-400"><?= htmlspecialchars($user['email']) ?></p>
+   <!-- Foto Profil dengan Event Tekan Lama -->
+<div class="flex flex-col items-center space-y-4">
+    <div class="relative w-32 h-32 rounded-full overflow-hidden border-4 border-gray-300 dark:border-gray-600">
+        <img src="<?= $avatar ?>" alt="Foto Profil" class="w-full h-full object-cover" id="profilePicture">
     </div>
 
-        <!-- Form Upload Foto Profil -->
-        <form action="upload_profile.php" method="POST" enctype="multipart/form-data" class="mt-2">
-            <input type="file" name="profile_picture" accept="image/png, image/jpeg" class="block w-full text-sm text-gray-600 dark:text-gray-300">
-            <button type="submit" class="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">⬆ Upload Foto</button>
-        </form>
+    <h2 class="text-2xl font-bold"><?= htmlspecialchars($user['username']) ?></h2>
+    <p class="text-gray-600 dark:text-gray-400"><?= htmlspecialchars($user['email']) ?></p>
+</div>
+
+<!-- Modal Pop-up -->
+<div id="profileModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white dark:bg-gray-700  rounded-lg shadow-lg p-6 w-80">
+        <h3 class="text-lg font-semibold text-center">Kelola Foto Profil</h3>
+        <div class="mt-4 flex flex-col space-y-3">
+            <!-- Form Upload Foto -->
+            <form action="upload_profile.php" method="POST" enctype="multipart/form-data">
+                <input type="file" name="profile_picture" class="hidden" id="fileInput">
+                <button type="button" onclick="document.getElementById('fileInput').click()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded w-full">📤 Ganti Foto</button>
+                <button type="submit" class="hidden" id="uploadSubmit"></button>
+            </form>
+
+            <!-- Form Hapus Foto -->
+            <form action="upload_profile.php" method="POST">
+                <button type="submit" name="delete_profile_picture" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded w-full">❌ Hapus Foto</button>
+            </form>
+
+            <!-- Tombol Tutup -->
+            <button onclick="closeModal()" class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded w-full">❎ Batal</button>
+        </div>
+    </div>
+</div>
+
 
 
         <!-- Biografi -->
@@ -144,6 +163,31 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
         function toggleModal(id) {
             document.getElementById(id).classList.toggle('hidden');
         }
+        let timer;
+    const profilePic = document.getElementById("profilePicture");
+    const modal = document.getElementById("profileModal");
+    const fileInput = document.getElementById("fileInput");
+    const uploadSubmit = document.getElementById("uploadSubmit");
+
+    // Event Tekan Lama
+    profilePic.addEventListener("mousedown", () => {
+        timer = setTimeout(() => {
+            modal.classList.remove("hidden"); // Tampilkan modal
+        }, 500); // Tekan selama 500ms
+    });
+
+    profilePic.addEventListener("mouseup", () => clearTimeout(timer));
+    profilePic.addEventListener("mouseleave", () => clearTimeout(timer));
+
+    // Tutup Modal jika klik di luar
+    function closeModal() {
+        modal.classList.add("hidden");
+    }
+
+    // Upload otomatis setelah pilih file
+    fileInput.addEventListener("change", () => {
+        uploadSubmit.click();
+    });
     </script>
 </body>
 </html>

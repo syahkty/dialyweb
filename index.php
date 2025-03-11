@@ -127,7 +127,9 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
     <nav class="fixed top-0 left-0 w-full bg-white dark:bg-gray-800 bg-opacity-70 dark:bg-opacity-70 backdrop-blur-lg shadow-md py-3 px-6 flex justify-between items-center z-50">
         <h1 class="text-xl font-bold flex items-center">
             <a href="profile.php" class="flex items-center space-x-2">
-                <img src="<?= $avatar ?>" alt="Foto Profil" class="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600">
+            <div class="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 dark:border-gray-600">
+        <img src="<?= $avatar ?>" alt="Foto Profil" class="w-full h-full object-cover" id="profilePicture">
+    </div>
                 <span>Dashboard Harian, <?= htmlspecialchars($_SESSION['username']) ?></span>
             </a>
         </h1>

@@ -43,12 +43,23 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $taskresult = $stmt->get_result();
 
+// Ambil data pengguna
+$stmt = $conn->prepare("SELECT username, email, bio, profile_picture FROM users WHERE id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
 
 // Query untuk mengambil jadwal besok berdasarkan user_id
 $stmt = $conn->prepare("SELECT * FROM schedule WHERE day = ? AND user_id = ?");
 $stmt->bind_param("si", $namaHariEsok, $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
+
+// Jika tidak ada foto, gunakan avatar DiceBear berdasarkan username
+$avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['profile_picture'])) 
+    ? "uploads/" . $user['profile_picture'] 
+    : "https://api.dicebear.com/7.x/initials/png?seed=" . urlencode($user['username']);
 ?>
 
 
@@ -114,14 +125,19 @@ $result = $stmt->get_result();
     
     <!-- Navbar -->
     <nav class="fixed top-0 left-0 w-full bg-white dark:bg-gray-800 bg-opacity-70 dark:bg-opacity-70 backdrop-blur-lg shadow-md py-3 px-6 flex justify-between items-center z-50">
-        <h1 class="text-xl font-bold">Dashboard Harian, <a href="profile.php"><?= $_SESSION['username'] ?></a></h1>
+        <h1 class="text-xl font-bold flex items-center">
+            <a href="profile.php" class="flex items-center space-x-2">
+                <img src="<?= $avatar ?>" alt="Foto Profil" class="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600">
+                <span>Dashboard Harian, <?= htmlspecialchars($_SESSION['username']) ?></span>
+            </a>
+        </h1>
         <div>
-        <button onclick="toggleDarkMode()" class="text-2xl focus:outline-none transition mr-2">
-            <span id="darkModeIcon">🌙</span>
-        </button>
+            <button onclick="toggleDarkMode()" class="text-2xl focus:outline-none transition mr-2">
+                <span id="darkModeIcon">🌙</span>
+            </button>
         </div>
-
     </nav>
+
 
     <div class="mt-16 flex flex-col mx-8 lg:mx-auto md:flex-row items-start justify-center gap-2">
     <!-- Jadwal Besok -->

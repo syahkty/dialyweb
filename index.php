@@ -135,7 +135,7 @@ $result = $stmt->get_result();
             <ul class="space-y-6">
                 <?php while ($row = $result->fetch_assoc()): ?>
                     <li class="flex items-center gap-6 bg-gray-100 dark:bg-gray-800 shadow p-4 rounded-lg hover:scale-105 transform transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
-                        <span class="text-3xl">📖</span> <!-- Ikon Buku -->
+                        <span class="text-3xl md:flex hidden">📖</span> <!-- Ikon Buku -->
                         <div>
                             <p class="text-lg font-semibold"><?= htmlspecialchars($row['course_name']) ?></p>
                             <div class="text-sm text-gray-600 dark:text-gray-300 flex gap-2">
@@ -165,7 +165,7 @@ $result = $stmt->get_result();
             <ul class="space-y-6">
                 <?php while ($row = $taskresult->fetch_assoc()): ?>
                     <li class="flex items-center gap-6 bg-gray-100 dark:bg-gray-800 shadow p-4 rounded-lg hover:scale-105 transform transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
-                        <span class="text-3xl">📖</span> <!-- Ikon Buku -->
+                        <span class="text-3xl hidden md:flex">📖</span> <!-- Ikon Buku -->
                         <div>
                             <p class="text-lg font-semibold"><?= htmlspecialchars($row['title']) ?></p>
                             <div class="text-sm text-gray-600 dark:text-gray-300 flex gap-2">

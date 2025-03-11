@@ -164,30 +164,31 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
             document.getElementById(id).classList.toggle('hidden');
         }
         let timer;
-    const profilePic = document.getElementById("profilePicture");
-    const modal = document.getElementById("profileModal");
-    const fileInput = document.getElementById("fileInput");
-    const uploadSubmit = document.getElementById("uploadSubmit");
+        const profilePic = document.getElementById("profilePicture");
+        const modal = document.getElementById("profileModal");
+        const fileInput = document.getElementById("fileInput");
+        const uploadSubmit = document.getElementById("uploadSubmit");
 
-    // Event Tekan Lama
-    profilePic.addEventListener("mousedown", () => {
-        timer = setTimeout(() => {
-            modal.classList.remove("hidden"); // Tampilkan modal
-        }, 500); // Tekan selama 500ms
-    });
+        // Event untuk Tekan Lama (di Desktop dan HP)
+        function startPress() {
+            timer = setTimeout(() => {
+                modal.classList.remove("hidden"); // Tampilkan modal
+            }, 500); // Tekan selama 500ms
+        }
 
-    profilePic.addEventListener("mouseup", () => clearTimeout(timer));
-    profilePic.addEventListener("mouseleave", () => clearTimeout(timer));
+        function cancelPress() {
+            clearTimeout(timer);
+        }
 
-    // Tutup Modal jika klik di luar
-    function closeModal() {
-        modal.classList.add("hidden");
-    }
+        // Event untuk Desktop (Mouse)
+        profilePic.addEventListener("mousedown", startPress);
+        profilePic.addEventListener("mouseup", cancelPress);
+        profilePic.addEventListener("mouseleave", cancelPress);
 
-    // Upload otomatis setelah pilih file
-    fileInput.addEventListener("change", () => {
-        uploadSubmit.click();
-    });
+        // Event untuk HP (Sentuhan)
+        profilePic.addEventListener("touchstart", startPress);
+        profilePic.addEventListener("touchend", cancelPress);
+        profilePic.addEventListener("touchmove", cancelPress); // Jika jari digeser, batal
     </script>
 </body>
 </html>

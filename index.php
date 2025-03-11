@@ -124,7 +124,7 @@ $result = $stmt->get_result();
 
     </nav>
 
-    <div class="mt-16 flex flex-col md:flex-row items-start justify-center gap-2">
+    <div class="mt-16 flex flex-col mx-8 lg:mx-auto md:flex-row items-start justify-center gap-2">
     <!-- Jadwal Besok -->
     <div class="w-full md:w-5/12 max-w-md">
         <h2 class="text-2xl font-bold pt-14 pb-4 flex items-center gap-2 justify-center text-center">
@@ -157,7 +157,7 @@ $result = $stmt->get_result();
 
     <!-- Tugas Terdekat -->
     <div class="w-full md:w-5/12 max-w-md">
-        <h2 class="text-2xl font-bold pt-14 pb-4 flex items-center gap-2 justify-center text-center">
+        <h2 class="text-2xl font-bold pt-4 md:pt-14 pb-4 flex items-center gap-2 justify-center text-center">
             📌 Tugas Terdekat
         </h2>
 

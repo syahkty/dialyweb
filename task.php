@@ -51,7 +51,7 @@ $schedules = $stmt->get_result();
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
-    <title>Todo Tugas Kuliah</title>
+    <title>Dashboard Harian | Tugas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         // Konfigurasi Tailwind agar dark mode pakai class

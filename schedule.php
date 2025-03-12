@@ -76,7 +76,7 @@ if (isset($_POST['update_schedule'])) {
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <title>Jadwal Mata Kuliah</title>
+    <title>Dashboard Harian | Jadwal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         // Konfigurasi Tailwind agar dark mode pakai class

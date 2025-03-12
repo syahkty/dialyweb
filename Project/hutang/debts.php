@@ -8,8 +8,9 @@ if (isset($_POST['add_debt'])) {
     $due_date = !empty($_POST['due_date']) ? $_POST['due_date'] : NULL; // Cek jika kosong
 
     // Gunakan prepared statement untuk keamanan
-    $stmt = $conn->prepare("INSERT INTO debts (amount, description, due_date) VALUES (?, ?, ?)");
-    $stmt->bind_param("dss", $amount, $description, $due_date);
+    $stmt = $conn->prepare("INSERT INTO debts (amount, description, due_date) VALUES (?, ?, CURRENT_DATE)");
+    $stmt->bind_param("ds", $amount, $description);
+
     
     if ($stmt->execute()) {
         header("Location: debts.php");
@@ -111,7 +112,7 @@ $totalPaid = 0;
                     <tr class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
                         <th class="py-3 px-4 text-left">💲 Jumlah</th>
                         <th class="py-3 px-4 text-left">📌 Keterangan</th>
-                        <th class="py-3 px-4 text-left">📅 Tanggal Jatuh Tempo</th>
+                        <th class="py-3 px-4 text-left">📅 Tanggal</th>
                         <th class="py-3 px-4 text-center">⚙ Aksi</th>
                     </tr>
                 </thead>
@@ -121,7 +122,9 @@ $totalPaid = 0;
                         <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
                             <td class="py-3 px-4 font-semibold">Rp <?= number_format($row['amount'], 2) ?></td>
                             <td class="py-3 px-4"><?= htmlspecialchars($row['description']) ?></td>
-                            <td class="py-3 px-4"><?= date('d M Y', strtotime($row['due_date'])) ?></td>
+                            <td class="py-3 px-4">
+                                 <?= !empty($row['due_date']) ? date('d M Y', strtotime($row['due_date'])) : '-' ?>
+                            </td>
                             <td class="py-3 px-4 text-center">
                                 <a href="edit_debt.php?id=<?= $row['id'] ?>" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mr-2">Edit</a>
                                 <a href="mark_paid.php?id=<?= $row['id'] ?>" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">Lunas</a>

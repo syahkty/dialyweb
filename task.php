@@ -161,5 +161,23 @@ $schedules = $stmt->get_result();
         <?php endwhile; ?>
     </div>
 </div>
+<h2 class="text-2xl font-bold mt-6 mb-4">✅ Grafik Tugas</h2>
+<div class="flex justify-center items-center h-80 pt-10">
+     <canvas id="taskChart"></canvas>
+    </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let ctx = document.getElementById('taskChart').getContext('2d');
+    let taskChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Selesai', 'Belum Selesai'],
+            datasets: [{
+                data: [<?= $done_tasks->num_rows ?>, <?= $pending_tasks->num_rows ?>],
+                backgroundColor: ['#10B981', '#EF4444']
+            }]
+        }
+    });
+</script>
 </body>
 </html>

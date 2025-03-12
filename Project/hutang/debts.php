@@ -161,7 +161,7 @@ $totalPaid = 0;
             <tr class="bg-green-500 text-white">
                 <th class="p-3 text-left">Jumlah</th>
                 <th class="p-3 text-left">Keterangan</th>
-                <th class="p-3 text-left">Jatuh Tempo</th>
+                <th class="p-3 text-left">Tanggal</th>
             </tr>
         </thead>
         <tbody>

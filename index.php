@@ -205,10 +205,6 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
         <?php endif; ?>
     </div>
 </div>
-
-
-
-
     <!-- Konten -->
     <div class="flex flex-col items-center justify-center p-10">
         <!-- Grid Menu -->

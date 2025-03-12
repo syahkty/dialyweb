@@ -15,13 +15,15 @@ if (isset($_POST['add_task'])) {
     $title = $_POST['title'];
     $due_date = $_POST['due_date'];
     $schedule_id = $_POST['schedule_id'];
+    $detail = $_POST['detail'];
 
-    $sql = "INSERT INTO tasks (title, due_date, schedule_id, user_id) 
-            VALUES ('$title', '$due_date', '$schedule_id', '$user_id')";
+    $sql = "INSERT INTO tasks (title, due_date, schedule_id, user_id, detail) 
+            VALUES ('$title', '$due_date', '$schedule_id', '$user_id', '$detail')";
     $conn->query($sql);
     header("Location: task.php");
     exit();
 }
+
 
 // Ambil Data Tugas Belum Selesai
 $stmt = $conn->prepare("SELECT tasks.*, schedule.course_name FROM tasks 
@@ -126,6 +128,8 @@ $schedules = $stmt->get_result();
                 <option value="<?= $row['id'] ?>"><?= $row['course_name'] ?></option>
             <?php endwhile; ?>
         </select>
+        <textarea name="detail" placeholder="Detail Tugas" required 
+          class="w-full bg-gray-200 dark:bg-gray-700 p-5 rounded-md text-xl"></textarea>
         <button type="submit" name="add_task" class="w-full bg-blue-500 text-white p-5 rounded-md text-xl">➕ Tambah</button>
     </form>
 
@@ -137,8 +141,9 @@ $schedules = $stmt->get_result();
             <div>
                 <h3 class="font-semibold text-xl"><?= $row['title'] ?></h3>
                 <p class="text-gray-500 dark:text-gray-400 text-lg"><?= $row['course_name'] ?> | ⏳ <?= $row['due_date'] ?></p>
+                <p class="text-gray-700 dark:text-gray-300 mr-6"><?= $row['detail'] ?></p> <!-- Tambahkan ini -->
             </div>
-            <a href="update_task.php?id=<?= $row['id'] ?>" class="bg-green-500 text-white p-4 text-xl rounded-md text-center sm:w-40">✔ Selesaikan</a>
+            <a href="update_task.php?id=<?= $row['id'] ?>" class="bg-green-500 text-white p-4 text-xl rounded-md text-center sm:w-40 h-15">✔ Selesaikan</a>
         </div>
         <?php endwhile; ?>
     </div>

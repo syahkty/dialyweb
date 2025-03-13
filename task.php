@@ -10,16 +10,22 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Tambah Tugas
 if (isset($_POST['add_task'])) {
     $title = $_POST['title'];
     $due_date = $_POST['due_date'];
     $schedule_id = $_POST['schedule_id'];
     $detail = $_POST['detail'];
+    $user_id = $_SESSION['user_id']; // Ambil user ID dari session
 
     $sql = "INSERT INTO tasks (title, due_date, schedule_id, user_id, detail) 
             VALUES ('$title', '$due_date', '$schedule_id', '$user_id', '$detail')";
-    $conn->query($sql);
+
+    if ($conn->query($sql)) {
+        $_SESSION['success_message'] = "Tugas berhasil ditambahkan!";
+    } else {
+        $_SESSION['error_message'] = "Gagal menambahkan tugas!";
+    }
+
     header("Location: task.php");
     exit();
 }
@@ -76,14 +82,6 @@ $schedules = $stmt->get_result();
                 console.log("Light mode diaktifkan.");
             }
         });
-        //         // Periksa preferensi mode saat halaman dimuat
-        //         document.addEventListener("DOMContentLoaded", () => {
-        //     if (localStorage.getItem("theme") === "dark") {
-        //         document.documentElement.classList.add("dark");
-        //     } else {
-        //         document.documentElement.classList.remove("dark");
-        //     }
-        // });
 
         function toggleDarkMode() {
             console.log("Tombol diklik.");
@@ -101,12 +99,9 @@ $schedules = $stmt->get_result();
             }
         }
     </script>
-
-
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="p-6 bg-gray-100 dark:bg-gray-900 dark:text-white transition-colors duration-300">
-
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-center">📌 Daftar Tugas Kuliah</h1>
         <button onclick="toggleDarkMode()" class="text-2xl focus:outline-none transition">
@@ -136,16 +131,21 @@ $schedules = $stmt->get_result();
     <!-- Daftar Tugas -->
     <h2 class="text-2xl font-bold mt-6 mb-4">📌 Tugas Belum Selesai</h2>
     <div class="bg-white dark:bg-gray-800 p-6 rounded-md shadow-md">
-        <?php while ($row = $pending_tasks->fetch_assoc()): ?>
+    <?php if ($pending_tasks->num_rows > 0): ?>
+    <?php while ($row = $pending_tasks->fetch_assoc()): ?>
         <div class="flex flex-col sm:flex-row sm:justify-between gap-2 border-b pb-4 mb-4">
             <div>
                 <h3 class="font-semibold text-xl"><?= $row['title'] ?></h3>
                 <p class="text-gray-500 dark:text-gray-400 text-lg"><?= $row['course_name'] ?> | ⏳ <?= $row['due_date'] ?></p>
-                <p class="text-gray-700 dark:text-gray-300 mr-6"><?= $row['detail'] ?></p> <!-- Tambahkan ini -->
+                <p class="text-gray-700 dark:text-gray-300 mr-6"><?= $row['detail'] ?></p>
             </div>
             <a href="update_task.php?id=<?= $row['id'] ?>" class="bg-green-500 text-white p-4 text-xl rounded-md text-center sm:w-40 h-15">✔ Selesaikan</a>
         </div>
-        <?php endwhile; ?>
+    <?php endwhile; ?>
+<?php else: ?>
+    <p class="text-gray-500 dark:text-gray-400 text-lg text-center">🎉 Tidak ada tugas pending! Nikmati harimu! 🎉</p>
+<?php endif; ?>
+
     </div>
 
     <!-- Tugas Selesai -->
@@ -155,7 +155,7 @@ $schedules = $stmt->get_result();
         <div class="bg-white dark:bg-gray-800 p-5 rounded-md shadow-md flex flex-col sm:flex-row sm:justify-between">
             <div>
                 <h3 class="font-semibold text-xl"><?= $row['title'] ?></h3>
-                <p class="text-gray-600 dark:text-gray-400 text-lg"><?= $row['course_name'] ?> | ✅ <?= $row['due_date'] ?></p>
+                <p class="text-gray-600 dark:text-gray-400 text-lg"><?= $row['course_name'] ?> | ✅ <?= $row['completed_at'] ?></p>
             </div>
         </div>
         <?php endwhile; ?>
@@ -179,5 +179,32 @@ $schedules = $stmt->get_result();
         }
     });
 </script>
+<?php
+// Tampilkan notifikasi jika ada
+if (isset($_SESSION['error_message']) || isset($_SESSION['success_message'])):
+?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    <?php if (isset($_SESSION['success_message'])): ?>
+        Swal.fire({
+            icon: 'success',
+            title: 'Sukses!',
+            text: '<?= $_SESSION['success_message'] ?>',
+            showConfirmButton: false,
+            timer: 2000
+        });
+    <?php unset($_SESSION['success_message']); endif; ?>
+
+    <?php if (isset($_SESSION['error_message'])): ?>
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops!',
+            text: '<?= $_SESSION['error_message'] ?>',
+            showConfirmButton: false,
+            timer: 2000
+        });
+    <?php unset($_SESSION['error_message']); endif; ?>
+</script>
+<?php endif; ?>
 </body>
 </html>

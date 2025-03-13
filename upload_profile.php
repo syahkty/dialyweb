@@ -22,7 +22,11 @@ if (isset($_POST['delete_profile_picture'])) {
         // Reset foto profil di database
         $stmt = $conn->prepare("UPDATE users SET profile_picture = NULL WHERE id = ?");
         $stmt->bind_param("i", $user_id);
-        $stmt->execute();
+        if ($stmt->execute()) {
+            $_SESSION['success_message'] = "Profil berhasil di Hapus";
+        } else {
+            $_SESSION['error_message'] = "Gagal menghapus Profil!";
+        } 
     }
 
     header("Location: profile.php");
@@ -35,7 +39,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["profile_picture"])) {
 
     // Validasi ukuran maksimal 2MB
     if ($file["size"] > 2 * 1024 * 1024) {
-        die("Ukuran file terlalu besar! Maksimal 2MB.");
+        $_SESSION['error_message'] = "Ukuran file terlalu besar! Maksimal 2MB.";
+        die;
     }
 
     // Validasi format file
@@ -43,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["profile_picture"])) {
     $file_ext = strtolower(pathinfo($file["name"], PATHINFO_EXTENSION));
 
     if (!in_array($file_ext, $allowed_extensions)) {
-        die("Format file tidak valid! Hanya menerima JPG, JPEG, dan PNG.");
+        $_SESSION['error_message'] = "Format file tidak valid! Hanya menerima JPG, JPEG, dan PNG.";
     }
 
     // Buat nama file unik
@@ -63,14 +68,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["profile_picture"])) {
         // Update database dengan nama file baru
         $stmt = $conn->prepare("UPDATE users SET profile_picture = ? WHERE id = ?");
         $stmt->bind_param("si", $new_filename, $user_id);
-        $stmt->execute();
+
+        if ($stmt->execute()) {
+            $_SESSION['success_message'] = "Profil berhasil di Unggah";
+        } else {
+            $_SESSION['error_message'] = "Gagal mengugah Profil!";
+        } 
 
         header("Location: profile.php");
         exit;
     } else {
-        die("Gagal mengunggah file!");
+        $_SESSION['error_message'] = "Gagal mengunggah file!";
+        die;
     }
 } else {
-    die("Akses tidak valid!");
+    $_SESSION['error_message'] = "Akses tidak valid!";
+    die;
 }
 ?>

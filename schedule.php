@@ -21,16 +21,20 @@ if (isset($_POST['add_schedule'])) {
     $sql = "INSERT INTO schedule (day, course_name, start_time, end_time, room, user_id) 
             VALUES ('$day', '$course_name', '$start_time', '$end_time', '$room', '$user_id')";
     $conn->query($sql);
+    
+    $_SESSION['success_message'] = "Jadwal berhasil ditambahkan!";
     header("Location: schedule.php");
     exit();
 }
 
-// Hapus Jadwal
+// Hapus Jadwal (Pakai JavaScript, jadi hapus di sini hanya eksekusi)
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
     $stmt = $conn->prepare("DELETE FROM schedule WHERE id = ? AND user_id = ?");
     $stmt->bind_param("ii", $id, $user_id);
     $stmt->execute();
+    
+    $_SESSION['success_message'] = "Jadwal berhasil dihapus!";
     header("Location: schedule.php");
     exit();
 }
@@ -67,17 +71,20 @@ if (isset($_POST['update_schedule'])) {
     $stmt = $conn->prepare("UPDATE schedule SET day=?, course_name=?, start_time=?, end_time=?, room=? WHERE id=? AND user_id=?");
     $stmt->bind_param("sssssii", $day, $course_name, $start_time, $end_time, $room, $id, $user_id);
     $stmt->execute();
+    
+    $_SESSION['success_message'] = "Jadwal berhasil diperbarui!";
     header("Location: schedule.php");
     exit();
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <title>Dashboard Harian | Jadwal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         // Konfigurasi Tailwind agar dark mode pakai class
         tailwind.config = {
@@ -85,37 +92,62 @@ if (isset($_POST['update_schedule'])) {
         };
 
         document.addEventListener("DOMContentLoaded", () => {
-            console.log("Halaman dimuat.");
-            
-            // Cek preferensi mode gelap dari localStorage
             const theme = localStorage.getItem("theme");
-            console.log("Tema dari localStorage:", theme);
             
             if (theme === "dark") {
                 document.documentElement.classList.add("dark");
                 document.getElementById("darkModeIcon").innerHTML = "☀️";
-                console.log("Dark mode diaktifkan.");
             } else {
                 document.documentElement.classList.remove("dark");
                 document.getElementById("darkModeIcon").innerHTML = "🌙";
-                console.log("Light mode diaktifkan.");
             }
+
+            // SweetAlert jika ada pesan sukses
+            <?php if (isset($_SESSION['success_message'])): ?>
+                let isDarkMode = document.documentElement.classList.contains('dark');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sukses!',
+                    text: "<?= $_SESSION['success_message'] ?>",
+                    showConfirmButton: false,
+                    timer: 2000,
+                    background: isDarkMode ? '#1E293B' : '#ffffff',
+                    color: isDarkMode ? '#ffffff' : '#000000'
+                });
+                <?php unset($_SESSION['success_message']); ?>
+            <?php endif; ?>
         });
 
         function toggleDarkMode() {
-            console.log("Tombol diklik.");
-            
             if (document.documentElement.classList.contains("dark")) {
                 document.documentElement.classList.remove("dark");
                 localStorage.setItem("theme", "light");
                 document.getElementById("darkModeIcon").innerHTML = "🌙";
-                console.log("Dark mode dimatikan, tema disimpan: light.");
             } else {
                 document.documentElement.classList.add("dark");
                 localStorage.setItem("theme", "dark");
                 document.getElementById("darkModeIcon").innerHTML = "☀️";
-                console.log("Dark mode diaktifkan, tema disimpan: dark.");
             }
+        }
+
+        function confirmDelete(id) {
+            let isDarkMode = document.documentElement.classList.contains('dark');
+            Swal.fire({
+                title: "Konfirmasi Hapus",
+                text: "Apakah Anda yakin ingin menghapus jadwal ini?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Ya, hapus!",
+                cancelButtonText: "Batal",
+                background: isDarkMode ? '#1E293B' : '#ffffff',
+                color: isDarkMode ? '#ffffff' : '#000000'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "schedule.php?delete=" + id;
+                }
+            });
         }
     </script>
 </head>
@@ -129,7 +161,7 @@ if (isset($_POST['update_schedule'])) {
 
     <a href="index.php" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md mb-6 inline-block">⬅ Kembali</a>
 
-    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
         <form method="POST" class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2">
             <input type="hidden" name="id" value="<?= $edit_id ?>">
             <input type="text" name="course_name" placeholder="Mata Kuliah" required class="bg-gray-200 dark:bg-gray-700 border p-3 rounded-md" value="<?= $edit_data['course_name'] ?>">
@@ -153,7 +185,7 @@ if (isset($_POST['update_schedule'])) {
             </div>
         </form>
     </div>
-    
+
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
         <?php while ($row = $schedules->fetch_assoc()): ?>
         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col justify-between">
@@ -162,13 +194,12 @@ if (isset($_POST['update_schedule'])) {
                 <p class="text-gray-600 dark:text-gray-400"><?= $row['day'] ?> | ⏰ <?= $row['start_time'] ?> - <?= $row['end_time'] ?></p>
                 <p class="text-gray-700 dark:text-gray-300 mt-2">📍 Ruangan: <?= $row['room'] ?></p>
             </div>
-            <div class="flex justify-between mt-4">
-                <a href="schedule.php?edit=<?= $row['id'] ?>" class="bg-yellow-500 hover:bg-yellow-600 text-white dark:text-black p-2 rounded-md flex-1 text-center mr-2">✏ Edit</a>
-                <a href="schedule.php?delete=<?= $row['id'] ?>" class="bg-red-500 hover:bg-red-600 text-white dark:text-black p-2 rounded-md flex-1 text-center">🗑 Hapus</a>
+            <div class="flex justify-start mt-4">
+                <a href="schedule.php?edit=<?= $row['id'] ?>" class="bg-yellow-500 p-2 rounded-md me-2 pe-4">✏ Edit</a>
+                <button onclick="confirmDelete(<?= $row['id'] ?>)" class="bg-red-500 p-2 rounded-md">🗑 Hapus</button>
             </div>
         </div>
         <?php endwhile; ?>
     </div>
 </body>
 </html>
-

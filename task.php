@@ -185,15 +185,21 @@ if (isset($_SESSION['error_message']) || isset($_SESSION['success_message'])):
 ?>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    // Deteksi dark mode dari Tailwind atau sistem
+    let isDarkMode = document.documentElement.classList.contains('dark');
+
     <?php if (isset($_SESSION['success_message'])): ?>
         Swal.fire({
             icon: 'success',
             title: 'Sukses!',
             text: '<?= $_SESSION['success_message'] ?>',
             showConfirmButton: false,
-            timer: 2000
+            timer: 2000,
+            background: isDarkMode ? '#1E293B' : '#ffffff', // Warna dark/light mode
+            color: isDarkMode ? '#ffffff' : '#000000' // Warna teks dark/light mode
         });
-    <?php unset($_SESSION['success_message']); endif; ?>
+        <?php unset($_SESSION['success_message']); ?>
+    <?php endif; ?>
 
     <?php if (isset($_SESSION['error_message'])): ?>
         Swal.fire({
@@ -201,10 +207,14 @@ if (isset($_SESSION['error_message']) || isset($_SESSION['success_message'])):
             title: 'Oops!',
             text: '<?= $_SESSION['error_message'] ?>',
             showConfirmButton: false,
-            timer: 2000
+            timer: 2000,
+            background: isDarkMode ? '#1E293B' : '#ffffff', // Warna dark/light mode
+            color: isDarkMode ? '#ffffff' : '#000000' // Warna teks dark/light mode
         });
-    <?php unset($_SESSION['error_message']); endif; ?>
+        <?php unset($_SESSION['error_message']); ?>
+    <?php endif; ?>
 </script>
+
 <?php endif; ?>
 </body>
 </html>

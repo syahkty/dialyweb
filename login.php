@@ -2,6 +2,8 @@
 include "config.php"; // Sesuaikan dengan path ke config.php
 session_start();
 
+$login_url = $client->createAuthUrl();
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
@@ -49,22 +51,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <form method="POST" class="mt-6">
             <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300">Username</label>
                 <input type="text" name="username" required placeholder="Masukkan username"
                     class="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300">Password</label>
                 <input type="password" name="password" required placeholder="Masukkan password"
                     class="w-full px-4 py-2 mt-1 border rounded-lg focus:ring focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
             </div>
 
             <button type="submit"
-                class="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition">
+                class="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-2 px-4 mt-2 rounded-lg transition">
                 Login
             </button>
         </form>
+        <h2 class="text-sm text-gray-800 dark:text-gray-200 mt-4 text-center"> Login dengan Google</h2>
+        <a href="<?= $login_url ?>" 
+        class="flex items-center justify-center gap-3 mt-2 px-4 py-2 mt-2 rounded-lg border border-gray-300 dark:border-gray-600 
+                bg-white text-gray-700 dark:text-gray-700 
+                hover:bg-gray-100 dark:hover:bg-gray-200 transition-all shadow-sm">
+                <img src="https://logopng.com.br/logos/google-37.png" 
+         alt="Google Logo" class="w-5 h-5">
+    <span class="font-medium">Login dengan Google</span>
+        </a>
 
         <p class="mt-4 text-center text-gray-600 dark:text-gray-400">
             Belum punya akun? <a href="register.php" class="text-blue-500 hover:underline">Daftar</a>

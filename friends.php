@@ -1,7 +1,5 @@
 <?php
 
-ob_start(); // Menghindari output tak terduga
-header("Content-Type: text/plain"); // Pastikan hanya teks dikirim
 
 
 session_start();

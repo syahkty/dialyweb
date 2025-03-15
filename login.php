@@ -1,34 +1,30 @@
 <?php
-include "config.php"; // Sesuaikan dengan path ke config.php
+include "config.php"; // Pastikan path ke config.php benar
 session_start();
 
 $login_url = $client->createAuthUrl();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
+    $username = trim($_POST['username']);
     $password = $_POST['password'];
 
-    // Pastikan mengambil "username" juga dalam SELECT
-    $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    // Gunakan prepared statement dengan PDO
+    $stmt = $pdo->prepare("SELECT id, username, password FROM users WHERE username = ?");
+    $stmt->execute([$username]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($result->num_rows === 1) {
-        $row = $result->fetch_assoc();
-        if (password_verify($password, $row['password'])) {
-            $_SESSION['user_id'] = $row['id'];
-            $_SESSION['username'] = $row['username']; // ✅ Sekarang ini akan tersimpan
-            header("Location: index.php");
-            exit();
-        } else {
-            $error = "Password salah!";
-        }
+    if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['username'] = $user['username']; // ✅ Pastikan username tersimpan di sesi
+
+        header("Location: index.php");
+        exit();
     } else {
-        $error = "Username tidak ditemukan!";
+        $error = "Username atau password salah!";
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="id">

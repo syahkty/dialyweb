@@ -1,31 +1,40 @@
 <?php
 require '../../config.php'; // Pastikan koneksi database
 
-// Ambil Data Hutang
-$id = $_GET['id'];
-$debt = $conn->query("SELECT * FROM debts WHERE id = $id")->fetch_assoc();
+// Ambil ID hutang
+$id = $_GET['id'] ?? null;
+
+if (!$id) {
+    die("ID tidak valid!");
+}
+
+// Gunakan prepared statement untuk mengambil data hutang
+$stmt = $pdo->prepare("SELECT * FROM debts WHERE id = ?");
+$stmt->execute([$id]);
+$debt = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$debt) {
+    die("Hutang tidak ditemukan!");
+}
 
 // Proses Update
-if (isset($_POST['update_debt'])) {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['update_debt'])) {
     $amount = $_POST['amount'];
     $description = $_POST['description'];
-    
-    // Jika `due_date` kosong, gunakan tanggal saat ini
     $due_date = !empty($_POST['due_date']) ? $_POST['due_date'] : date('Y-m-d');
 
-    // Gunakan prepared statement untuk keamanan
-    $stmt = $conn->prepare("UPDATE debts SET amount = ?, description = ?, due_date = ? WHERE id = ?");
-    $stmt->bind_param("dssi", $amount, $description, $due_date, $id);
+    // Update data menggunakan prepared statement
+    $stmt = $pdo->prepare("UPDATE debts SET amount = ?, description = ?, due_date = ? WHERE id = ?");
+    $update = $stmt->execute([$amount, $description, $due_date, $id]);
 
-    if ($stmt->execute()) {
-        header("Location: debts.php"); // Redirect ke halaman daftar hutang
+    if ($update) {
+        header("Location: debts.php");
         exit();
     } else {
         echo "Gagal memperbarui hutang!";
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="id">
@@ -42,13 +51,19 @@ if (isset($_POST['update_debt'])) {
         <form method="POST" class="space-y-4">
             <div>
                 <label class="block text-gray-700 dark:text-gray-300 font-medium">Jumlah Hutang</label>
-                <input type="number" name="amount" value="<?= $debt['amount'] ?>" required 
+                <input type="number" name="amount" value="<?= htmlspecialchars($debt['amount']) ?>" required 
                     class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
 
             <div>
                 <label class="block text-gray-700 dark:text-gray-300 font-medium">Deskripsi</label>
-                <input type="text" name="description" value="<?= $debt['description'] ?>" required 
+                <input type="text" name="description" value="<?= htmlspecialchars($debt['description']) ?>" required 
+                    class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-gray-700 dark:text-gray-300 font-medium">Tanggal Jatuh Tempo</label>
+                <input type="date" name="due_date" value="<?= $debt['due_date'] ?>" 
                     class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
 
@@ -60,4 +75,3 @@ if (isset($_POST['update_debt'])) {
     </div>
 </body>
 </html>
-

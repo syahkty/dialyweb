@@ -19,8 +19,9 @@ if (isset($_POST['add_schedule'])) {
     $room = $_POST['room'];
 
     $sql = "INSERT INTO schedule (day, course_name, start_time, end_time, room, user_id) 
-            VALUES ('$day', '$course_name', '$start_time', '$end_time', '$room', '$user_id')";
-    $conn->query($sql);
+            VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$day, $course_name, $start_time, $end_time, $room, $user_id]);
     
     $_SESSION['success_message'] = "Jadwal berhasil ditambahkan!";
     header("Location: schedule.php");
@@ -30,9 +31,8 @@ if (isset($_POST['add_schedule'])) {
 // Hapus Jadwal (Pakai JavaScript, jadi hapus di sini hanya eksekusi)
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
-    $stmt = $conn->prepare("DELETE FROM schedule WHERE id = ? AND user_id = ?");
-    $stmt->bind_param("ii", $id, $user_id);
-    $stmt->execute();
+    $stmt = $pdo->prepare("DELETE FROM schedule WHERE id = ? AND user_id = ?");
+    $stmt->execute([$id, $user_id]);
     
     $_SESSION['success_message'] = "Jadwal berhasil dihapus!";
     header("Location: schedule.php");
@@ -40,23 +40,20 @@ if (isset($_GET['delete'])) {
 }
 
 // Ambil Data Jadwal
-$stmt = $conn->prepare("SELECT * FROM schedule 
+$stmt = $pdo->prepare("SELECT * FROM schedule 
                         WHERE user_id = ? 
                         ORDER BY FIELD(day, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat')");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$schedules = $stmt->get_result();
+$stmt->execute([$user_id]);
+$schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Ambil Data untuk Edit
 $edit_id = "";
 $edit_data = ["day" => "", "course_name" => "", "start_time" => "", "end_time" => "", "room" => ""];
 if (isset($_GET['edit'])) {
     $edit_id = $_GET['edit'];
-    $stmt = $conn->prepare("SELECT * FROM schedule WHERE id = ? AND user_id = ?");
-    $stmt->bind_param("ii", $edit_id, $user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $edit_data = $result->fetch_assoc();
+    $stmt = $pdo->prepare("SELECT * FROM schedule WHERE id = ? AND user_id = ?");
+    $stmt->execute([$edit_id, $user_id]);
+    $edit_data = $stmt->fetch(PDO::FETCH_ASSOC) ?: $edit_data;
 }
 
 // Simpan Perubahan Edit Jadwal
@@ -68,15 +65,15 @@ if (isset($_POST['update_schedule'])) {
     $end_time = $_POST['end_time'];
     $room = $_POST['room'];
 
-    $stmt = $conn->prepare("UPDATE schedule SET day=?, course_name=?, start_time=?, end_time=?, room=? WHERE id=? AND user_id=?");
-    $stmt->bind_param("sssssii", $day, $course_name, $start_time, $end_time, $room, $id, $user_id);
-    $stmt->execute();
+    $stmt = $pdo->prepare("UPDATE schedule SET day=?, course_name=?, start_time=?, end_time=?, room=? WHERE id=? AND user_id=?");
+    $stmt->execute([$day, $course_name, $start_time, $end_time, $room, $id, $user_id]);
     
     $_SESSION['success_message'] = "Jadwal berhasil diperbarui!";
     header("Location: schedule.php");
     exit();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="id">
@@ -187,19 +184,19 @@ if (isset($_POST['update_schedule'])) {
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
-        <?php while ($row = $schedules->fetch_assoc()): ?>
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col justify-between">
-            <div>
-                <h2 class="text-lg font-bold text-blue-600 dark:text-blue-400"><?= $row['course_name'] ?></h2>
-                <p class="text-gray-600 dark:text-gray-400"><?= $row['day'] ?> | ⏰ <?= $row['start_time'] ?> - <?= $row['end_time'] ?></p>
-                <p class="text-gray-700 dark:text-gray-300 mt-2">📍 Ruangan: <?= $row['room'] ?></p>
-            </div>
-            <div class="flex justify-start mt-4">
-                <a href="schedule.php?edit=<?= $row['id'] ?>" class="bg-yellow-500 p-2 rounded-md me-2 pe-4">✏ Edit</a>
-                <button onclick="confirmDelete(<?= $row['id'] ?>)" class="bg-red-500 p-2 rounded-md">🗑 Hapus</button>
-            </div>
+    <?php foreach ($schedules as $row): ?>
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col justify-between">
+        <div>
+            <h2 class="text-lg font-bold text-blue-600 dark:text-blue-400"><?= htmlspecialchars($row['course_name']) ?></h2>
+            <p class="text-gray-600 dark:text-gray-400"><?= htmlspecialchars($row['day']) ?> | ⏰ <?= htmlspecialchars($row['start_time']) ?> - <?= htmlspecialchars($row['end_time']) ?></p>
+            <p class="text-gray-700 dark:text-gray-300 mt-2">📍 Ruangan: <?= htmlspecialchars($row['room']) ?></p>
         </div>
-        <?php endwhile; ?>
+        <div class="flex justify-start mt-4">
+            <a href="schedule.php?edit=<?= $row['id'] ?>" class="bg-yellow-500 p-2 rounded-md me-2 pe-4">✏ Edit</a>
+            <button onclick="confirmDelete(<?= $row['id'] ?>)" class="bg-red-500 p-2 rounded-md">🗑 Hapus</button>
+        </div>
+    </div>
+<?php endforeach; ?>
     </div>
 </body>
 </html>

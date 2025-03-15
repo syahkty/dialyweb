@@ -32,34 +32,44 @@ $hariSekarang = date('N');
 $hariEsok = ($hariSekarang == 7) ? 1 : $hariSekarang + 1;
 $namaHariEsok = $hariArray[$hariEsok];
 
+// Query untuk mengambil tugas yang belum selesai (limit 2)
 $query = "SELECT tasks.*, schedule.course_name 
           FROM tasks 
           LEFT JOIN schedule ON tasks.schedule_id = schedule.id 
-          WHERE tasks.user_id = ? AND tasks.status != 'Selesai' 
+          WHERE tasks.user_id = :user_id AND tasks.status != 'Selesai' 
           ORDER BY tasks.due_date ASC 
           LIMIT 2";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$taskresult = $stmt->get_result();
+$stmt = $pdo->prepare($query);
+$stmt->execute(['user_id' => $user_id]);
+$taskresult = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Ambil data pengguna
-$stmt = $conn->prepare("SELECT username, email, bio, profile_picture FROM users WHERE id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
+$stmt = $pdo->prepare("SELECT username, email, bio, profile_picture FROM users WHERE id = :user_id");
+$stmt->execute(['user_id' => $user_id]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Query untuk mengambil jadwal besok berdasarkan user_id
-$stmt = $conn->prepare("SELECT * FROM schedule WHERE day = ? AND user_id = ?");
-$stmt->bind_param("si", $namaHariEsok, $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
+$stmt = $pdo->prepare("SELECT * FROM schedule WHERE day = :day AND user_id = :user_id");
+$stmt->execute(['day' => $namaHariEsok, 'user_id' => $user_id]);
+$scheduleResult = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Jika tidak ada foto, gunakan avatar DiceBear berdasarkan username
 $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['profile_picture'])) 
     ? "uploads/" . $user['profile_picture'] 
     : "https://api.dicebear.com/7.x/initials/png?seed=" . urlencode($user['username']);
+
+
+//     // fitur teman
+//     $friend_id = $_POST['friend_id'];
+
+// $sql = "INSERT INTO friends (user_id, friend_id, status) VALUES (?, ?, 'pending')";
+// $stmt = $conn->prepare($sql);
+// $stmt->bind_param("ii", $user_id, $friend_id);
+// if ($stmt->execute()) {
+//     echo json_encode(["status" => "success", "message" => "Permintaan pertemanan dikirim!"]);
+// } else {
+//     echo json_encode(["status" => "error", "message" => "Gagal mengirim permintaan."]);
+// }
 ?>
 
 
@@ -148,9 +158,9 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
             📅 Jadwal Besok (<?= $namaHariEsok ?>)
         </h2>
 
-        <?php if ($result->num_rows > 0): ?>
+        <?php if (count($scheduleResult) > 0): ?>
             <ul class="space-y-6">
-                <?php while ($row = $result->fetch_assoc()): ?>
+                    <?php while ($row = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
                     <li class="flex items-center gap-6 bg-gray-100 dark:bg-gray-800 shadow p-4 rounded-lg hover:scale-105 transform transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
                         <span class="text-3xl md:flex hidden">📖</span> <!-- Ikon Buku -->
                         <div>
@@ -178,9 +188,9 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
             📌 Tugas Terdekat
         </h2>
 
-        <?php if ($taskresult->num_rows > 0): ?>
+        <?php if (count($taskresult) > 0): ?>
             <ul class="space-y-6">
-                <?php while ($row = $taskresult->fetch_assoc()): ?>
+            <?php while ($row = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
                     <li class="flex items-center gap-6 bg-gray-100 dark:bg-gray-800 shadow p-4 rounded-lg hover:scale-105 transform transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
                         <span class="text-3xl hidden md:flex">📖</span> <!-- Ikon Buku -->
                         <div>
@@ -207,8 +217,8 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
 </div>
     <!-- Konten -->
     <div class="flex flex-col items-center justify-center p-10">
-        <!-- Grid Menu -->
-        <div class="grid gap-6 sm:grid-cols-2 <?php echo $gridClass; ?> w-full max-w-4xl">
+    <!-- Grid Menu -->
+    <div class="grid gap-6 sm:grid-cols-2 <?php echo $gridClass; ?> w-full max-w-4xl">
         <a href="task.php" class="glassmorphism p-6 text-gray-800 dark:text-gray-200 shadow-lg hover:scale-105 transform transition-all">
             <div class="flex items-center gap-3">
                 <span class="text-3xl">📚</span>
@@ -219,6 +229,7 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
                 Lihat Tugas
             </button>
         </a>
+        
         <a href="schedule.php" class="glassmorphism p-6 text-gray-800 dark:text-gray-200 shadow-lg hover:scale-105 transform transition-all">
             <div class="flex items-center gap-3">
                 <span class="text-3xl">📅</span>
@@ -229,8 +240,8 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
                 Lihat Jadwal
             </button>
         </a>
-        
-        <!-- Hanya tampil jika user_id = 2 -->
+
+        <!-- Hanya tampil jika user_id = 1 -->
         <?php if ($user_id == 1): ?>
             <a href="project.html" class="glassmorphism p-6 text-gray-800 dark:text-gray-200 shadow-lg hover:scale-105 transform transition-all">
                 <div class="flex items-center gap-3">
@@ -243,7 +254,21 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
                 </button>
             </a>
         <?php endif; ?>
+
+        <!-- Tambahan Card untuk Fitur Teman -->
+        <a href="friends.php" class="glassmorphism p-6 text-gray-800 dark:text-gray-200 shadow-lg hover:scale-105 transform transition-all">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">👥</span>
+                <h2 class="text-xl font-bold">Teman</h2>
+            </div>
+            <p class="text-sm mt-2">Lihat daftar temanmu dan tambahkan teman baru.</p>
+            <button class="mt-4 px-4 py-2 bg-yellow-500 dark:bg-yellow-700 text-white rounded-lg shadow-md hover:bg-yellow-600 dark:hover:bg-yellow-800 transition">
+                Kelola Teman
+            </button>
+        </a>
     </div>
+</div>
+
     </div>
 
 </body>

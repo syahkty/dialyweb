@@ -2,17 +2,21 @@
 include "config.php"; // Sesuaikan dengan path ke config.php
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST['username'];
+    $username = trim($_POST['username']);
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-    $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-    $stmt->bind_param("ss", $username, $password);
+    try {
+        $stmt = $pdo->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+        $stmt->execute([$username, $password]);
 
-    if ($stmt->execute()) {
         header("Location: login.php");
         exit();
-    } else {
-        $error = "Gagal mendaftar! Username mungkin sudah digunakan.";
+    } catch (PDOException $e) {
+        if ($e->getCode() == 23000) { // Kode error untuk duplicate entry
+            $error = "Username sudah digunakan!";
+        } else {
+            $error = "Gagal mendaftar! Silakan coba lagi.";
+        }
     }
 }
 ?>
@@ -32,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <?php if (isset($error)): ?>
             <div class="mt-4 p-3 bg-red-500 text-white text-sm rounded-md">
-                <?= $error; ?>
+                <?= htmlspecialchars($error); ?>
             </div>
         <?php endif; ?>
 

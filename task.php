@@ -8,19 +8,37 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
+$user_id = $_SESSION['user_id']; // ✅ Pindahkan ini ke awal!
+
+// Ambil tugas yang dibagikan kepada user yang sedang login
+$stmt = $pdo->prepare("SELECT tasks.*, users.username AS sender_name 
+                        FROM shared_tasks 
+                        JOIN tasks ON shared_tasks.task_id = tasks.id 
+                        JOIN users ON shared_tasks.sender_id = users.id 
+                        WHERE shared_tasks.receiver_id = ?");
+$stmt->execute([$user_id]);
+$shared_tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 if (isset($_POST['add_task'])) {
     $title = $_POST['title'];
     $due_date = $_POST['due_date'];
     $schedule_id = $_POST['schedule_id'];
     $detail = $_POST['detail'];
-    $user_id = $_SESSION['user_id']; // Ambil user ID dari session
 
+    // Gunakan PDO untuk INSERT
     $sql = "INSERT INTO tasks (title, due_date, schedule_id, user_id, detail) 
-            VALUES ('$title', '$due_date', '$schedule_id', '$user_id', '$detail')";
+            VALUES (:title, :due_date, :schedule_id, :user_id, :detail)";
+    
+    $stmt = $pdo->prepare($sql);
+    $result = $stmt->execute([
+        ':title' => $title,
+        ':due_date' => $due_date,
+        ':schedule_id' => $schedule_id,
+        ':user_id' => $user_id,
+        ':detail' => $detail
+    ]);
 
-    if ($conn->query($sql)) {
+    if ($result) {
         $_SESSION['success_message'] = "Tugas berhasil ditambahkan!";
     } else {
         $_SESSION['error_message'] = "Gagal menambahkan tugas!";
@@ -30,29 +48,27 @@ if (isset($_POST['add_task'])) {
     exit();
 }
 
-
 // Ambil Data Tugas Belum Selesai
-$stmt = $conn->prepare("SELECT tasks.*, schedule.course_name FROM tasks 
+$stmt = $pdo->prepare("SELECT tasks.*, schedule.course_name FROM tasks 
                         LEFT JOIN schedule ON tasks.schedule_id = schedule.id 
                         WHERE tasks.status = 'Belum' AND tasks.user_id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$pending_tasks = $stmt->get_result();
+$stmt->execute([$user_id]);
+$pending_tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Ambil Data Tugas Selesai
-$stmt = $conn->prepare("SELECT tasks.*, schedule.course_name FROM tasks 
+$stmt = $pdo->prepare("SELECT tasks.*, schedule.course_name FROM tasks 
                         LEFT JOIN schedule ON tasks.schedule_id = schedule.id 
                         WHERE tasks.status = 'Selesai' AND tasks.user_id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$done_tasks = $stmt->get_result();
+$stmt->execute([$user_id]);
+$done_tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Query hanya mengambil jadwal milik user yang login
-$stmt = $conn->prepare("SELECT * FROM schedule WHERE user_id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$schedules = $stmt->get_result();
+$stmt = $pdo->prepare("SELECT * FROM schedule WHERE user_id = ?");
+$stmt->execute([$user_id]);
+$schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="id" class="dark">
@@ -129,14 +145,14 @@ $schedules = $stmt->get_result();
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="p-6 bg-gray-100 dark:bg-gray-900 dark:text-white transition-colors duration-300">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-center">📌 Daftar Tugas Kuliah</h1>
-        <button onclick="toggleDarkMode()" class="text-2xl focus:outline-none transition">
-            <span id="darkModeIcon">🌙</span>
-        </button>
-    </div>
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-center">📌 Daftar Tugas Kuliah</h1>
+            <button onclick="toggleDarkMode()" class="text-2xl focus:outline-none transition">
+                <span id="darkModeIcon">🌙</span>
+            </button>
+        </div>
 
-    <a href="index.php" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md mb-6 inline-block">⬅ Kembali</a>
+        <a href="index.php" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md mb-6 inline-block">⬅ Kembali</a>
     <!-- Form Tambah Tugas -->
     <form method="POST" class="bg-white dark:bg-gray-800 p-6 rounded-md shadow-md flex flex-col gap-4">
         <input type="text" name="title" placeholder="Judul Tugas" required 
@@ -146,9 +162,10 @@ $schedules = $stmt->get_result();
         <select name="schedule_id" required 
                 class="w-full bg-gray-200 dark:bg-gray-700 p-5 rounded-md text-xl">
             <option value="">Pilih Mata Kuliah</option>
-            <?php while ($row = $schedules->fetch_assoc()): ?>
+            <?php foreach ($schedules as $row): ?>
+
                 <option value="<?= $row['id'] ?>"><?= $row['course_name'] ?></option>
-            <?php endwhile; ?>
+            <?php endforeach; ?>
         </select>
         <textarea name="detail" placeholder="Detail Tugas" required 
           class="w-full bg-gray-200 dark:bg-gray-700 p-5 rounded-md text-xl"></textarea>
@@ -158,34 +175,106 @@ $schedules = $stmt->get_result();
     <!-- Daftar Tugas -->
     <h2 class="text-2xl font-bold mt-6 mb-4">📌 Tugas Belum Selesai</h2>
     <div class="bg-white dark:bg-gray-800 p-6 rounded-md shadow-md">
-    <?php if ($pending_tasks->num_rows > 0): ?>
-    <?php while ($row = $pending_tasks->fetch_assoc()): ?>
+    <?php if (count($pending_tasks) > 0): ?>
+    <?php foreach ($pending_tasks as $row): ?>
         <div class="flex flex-col sm:flex-row sm:justify-between gap-2 border-b pb-4 mb-4">
             <div>
-                <h3 class="font-semibold text-xl"><?= $row['title'] ?></h3>
-                <p class="text-gray-500 dark:text-gray-400 text-lg"><?= $row['course_name'] ?> | ⏳ <?= $row['due_date'] ?></p>
-                <p class="text-gray-700 dark:text-gray-300 mr-6"><?= $row['detail'] ?></p>
+                <h3 class="font-semibold text-xl"><?= htmlspecialchars($row['title']) ?></h3>
+                <p class="text-gray-500 dark:text-gray-400 text-lg">
+                    <?= htmlspecialchars($row['course_name']) ?> | ⏳ <?= htmlspecialchars($row['due_date']) ?>
+                </p>
+                <p class="text-gray-700 dark:text-gray-300 mr-6"><?= htmlspecialchars($row['detail']) ?></p>
             </div>
-            <a href="update_task.php?id=<?= $row['id'] ?>" class="bg-green-500 text-white p-4 text-xl rounded-md text-center sm:w-40 h-15">✔ Selesaikan</a>
+            <a href="update_task.php?id=<?= $row['id'] ?>" 
+               class="bg-green-500 text-white p-4 text-xl rounded-md text-center sm:w-40 h-15">
+                ✔ Selesaikan
+            </a>
         </div>
-    <?php endwhile; ?>
+    <?php endforeach; ?>
 <?php else: ?>
-    <p class="text-gray-500 dark:text-gray-400 text-lg text-center">🎉 Tidak ada tugas pending! Nikmati harimu! 🎉</p>
+    <p class="text-gray-500 dark:text-gray-400 text-lg text-center">
+        🎉 Tidak ada tugas pending! Nikmati harimu! 🎉
+    </p>
 <?php endif; ?>
-
     </div>
+
+    <form action="share_task.php" method="POST" class="bg-white dark:bg-gray-800 p-6 rounded-md shadow-md flex flex-col gap-4 mt-4">
+    <label for="task">Pilih Tugas:</label>
+    <select name="task_id" required class="w-full bg-gray-200 dark:bg-gray-700 p-5 rounded-md text-xl">
+        <?php
+        // Ambil daftar tugas milik user yang login
+        $stmt = $pdo->prepare("SELECT id, title FROM tasks WHERE user_id = ?");
+        $stmt->execute([$user_id]);
+        $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach ($tasks as $task) {
+            echo "<option value='{$task['id']}'>{$task['title']}</option>";
+        }
+        ?>
+    </select>
+
+    <label for="friend">Pilih Teman:</label>
+    <select name="receiver_id" required class="w-full bg-gray-200 dark:bg-gray-700 p-5 rounded-md text-xl">
+    <?php
+    // Ambil daftar teman yang sudah diterima
+    $query = "SELECT users.id, users.username FROM friends 
+              JOIN users ON friends.friend_id = users.id 
+              WHERE friends.user_id = ? AND friends.status = 'accepted'
+              UNION
+              SELECT users.id, users.username FROM friends 
+              JOIN users ON friends.user_id = users.id 
+              WHERE friends.friend_id = ? AND friends.status = 'accepted'";
+
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$user_id, $user_id]);
+    $friends = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Loop untuk menampilkan daftar teman dalam <option>
+    foreach ($friends as $friend) {
+        echo "<option value='{$friend['id']}'>{$friend['username']}</option>";
+    }
+    ?>
+</select>
+
+
+    <button type="submit" name="share_task" class="w-full bg-blue-500 text-white p-5 rounded-md text-xl">Bagikan</button>
+</form>
+
+
+<!-- Tugas yang Dibagikan -->
+<h2 class="text-2xl font-bold mt-6 mb-4">📨 Tugas yang Dibagikan</h2>
+<div class="bg-white dark:bg-gray-800 p-6 rounded-md shadow-md">
+    <?php if (count($shared_tasks) > 0): ?>
+        <?php foreach ($shared_tasks as $row): ?>
+            <div class="border-b pb-4 mb-4">
+                <h3 class="font-semibold text-xl"><?= htmlspecialchars($row['title']) ?></h3>
+                <p class="text-gray-500 dark:text-gray-400 text-lg">
+                    Dari: <?= htmlspecialchars($row['sender_name']) ?> | ⏳ <?= htmlspecialchars($row['due_date']) ?>
+                </p>
+                <p class="text-gray-700 dark:text-gray-300"><?= htmlspecialchars($row['detail']) ?></p>
+            </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p class="text-gray-500 dark:text-gray-400 text-lg text-center">
+            ❌ Tidak ada tugas yang dibagikan!
+        </p>
+    <?php endif; ?>
+</div>
 
     <!-- Tugas Selesai -->
     <h2 class="text-2xl font-bold mt-6 mb-4">✅ Tugas Selesai</h2>
     <div class="space-y-3">
-        <?php while ($row = $done_tasks->fetch_assoc()): ?>
-        <div class="bg-white dark:bg-gray-800 p-5 rounded-md shadow-md flex flex-col sm:flex-row sm:justify-between">
-            <div>
-                <h3 class="font-semibold text-xl"><?= $row['title'] ?></h3>
-                <p class="text-gray-600 dark:text-gray-400 text-lg"><?= $row['course_name'] ?> | ✅ <?= $row['completed_at'] ?></p>
-            </div>
+    <?php foreach ($done_tasks as $row): ?>
+    <div class="bg-white dark:bg-gray-800 p-5 rounded-md shadow-md flex flex-col sm:flex-row sm:justify-between">
+        <div>
+            <h3 class="font-semibold text-xl"><?= htmlspecialchars($row['title']) ?></h3>
+            <p class="text-gray-600 dark:text-gray-400 text-lg">
+                <?= htmlspecialchars($row['course_name']) ?> | ✅ <?= htmlspecialchars($row['completed_at']) ?>
+            </p>
         </div>
-        <?php endwhile; ?>
+    </div>
+<?php endforeach; ?>
+
     </div>
 </div>
 <h2 class="text-2xl font-bold mt-6 mb-4">✅ Grafik Tugas</h2>
@@ -200,21 +289,18 @@ $schedules = $stmt->get_result();
         data: {
             labels: ['Selesai', 'Belum Selesai'],
             datasets: [{
-                data: [<?= $done_tasks->num_rows ?>, <?= $pending_tasks->num_rows ?>],
+                data: [<?= count($done_tasks) ?>, <?= count($pending_tasks) ?>],
                 backgroundColor: ['#10B981', '#EF4444']
             }]
         }
     });
 </script>
+
 <?php
 // Tampilkan notifikasi jika ada
 if (isset($_SESSION['error_message']) || isset($_SESSION['success_message'])):
 ?>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    // Deteksi dark mode dari Tailwind atau sistem
-    
-</script>
 
 <?php endif; ?>
 </body>

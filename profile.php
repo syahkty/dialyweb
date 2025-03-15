@@ -4,12 +4,10 @@ require 'config.php'; // Sesuaikan dengan koneksi databasenya
 
 $user_id = $_SESSION['user_id']; // Ambil user_id dari sesi login
 
-// Ambil data pengguna
-$stmt = $conn->prepare("SELECT username, email, bio, profile_picture FROM users WHERE id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
+$stmt = $pdo->prepare("SELECT username, email, bio, profile_picture FROM users WHERE id = ?");
+$stmt->execute([$user_id]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
 
 // Jika tidak ada foto, gunakan avatar DiceBear berdasarkan username
 $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['profile_picture'])) 

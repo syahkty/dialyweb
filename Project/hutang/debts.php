@@ -5,37 +5,48 @@ include "../../config.php";
 if (isset($_POST['add_debt'])) {
     $amount = $_POST['amount'];
     $description = $_POST['description'];
-    $due_date = !empty($_POST['due_date']) ? $_POST['due_date'] : NULL; // Cek jika kosong
+    $due_date = !empty($_POST['due_date']) ? $_POST['due_date'] : NULL;
 
-    // Gunakan prepared statement untuk keamanan
-    $stmt = $conn->prepare("INSERT INTO debts (amount, description, due_date) VALUES (?, ?, CURRENT_DATE)");
-    $stmt->bind_param("ds", $amount, $description);
+    try {
+        $stmt = $pdo->prepare("INSERT INTO debts (amount, description, due_date, status) 
+                               VALUES (:amount, :description, :due_date, 'Belum Lunas')");
+        $stmt->bindParam(':amount', $amount);
+        $stmt->bindParam(':description', $description);
+        $stmt->bindParam(':due_date', $due_date);
 
-    
-    if ($stmt->execute()) {
+        $stmt->execute();
         header("Location: debts.php");
         exit();
-    } else {
-        echo "Gagal menambahkan hutang!";
+    } catch (PDOException $e) {
+        echo "Gagal menambahkan hutang: " . $e->getMessage();
     }
 }
 
-
 // Ambil Data Hutang Belum Lunas
-$pending_debts = $conn->query("SELECT * FROM debts WHERE status = 'Belum Lunas'");
+try {
+    $stmt = $pdo->prepare("SELECT * FROM debts WHERE status = 'Belum Lunas'");
+    $stmt->execute();
+    $pending_debts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Menghitung total hutang
-$total_hutang = 0;
-while ($row = $pending_debts->fetch_assoc()) {
-    $total_hutang += $row['amount'];
-    $debts[] = $row;
+    $total_hutang = 0;
+    foreach ($pending_debts as $row) {
+        $total_hutang += $row['amount'];
+    }
+} catch (PDOException $e) {
+    echo "Gagal mengambil data hutang: " . $e->getMessage();
 }
 
 // Ambil Data Hutang Lunas
-$paid_debts = $conn->query("SELECT * FROM debts WHERE status = 'Lunas'");
+try {
+    $stmt = $pdo->prepare("SELECT * FROM debts WHERE status = 'Lunas'");
+    $stmt->execute();
+    $paid_debts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo "Gagal mengambil data hutang lunas: " . $e->getMessage();
+}
 
-$totalPaid = 0;
 ?>
+
 
 <!DOCTYPE html>
 <html lang=id">
@@ -117,8 +128,8 @@ $totalPaid = 0;
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (!empty($debts)): ?>
-                        <?php foreach ($debts as $row): ?>
+                    <?php if (!empty($pending_debts)): ?>
+                        <?php foreach ($pending_debts as $row): ?>
                         <tr class="border-b dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">
                             <td class="py-3 px-4 font-semibold">Rp <?= number_format($row['amount'], 2) ?></td>
                             <td class="py-3 px-4"><?= htmlspecialchars($row['description']) ?></td>
@@ -165,17 +176,19 @@ $totalPaid = 0;
             </tr>
         </thead>
         <tbody>
-            <?php while ($row = $paid_debts->fetch_assoc()): 
-                $totalPaid += $row['amount']; // Tambahkan ke total
-            ?>
-            <tr class="border-b dark:border-gray-700">
-                <td class="p-3 text-green-500 font-semibold">Rp <?= number_format($row['amount'], 2) ?></td>
-                <td class="p-3"><?= htmlspecialchars($row['description']) ?></td>
-                <td class="p-3">
-                    <?= !empty($row['due_date']) ? date("d M Y", strtotime($row['due_date'])) : '-' ?>
-                </td>
-            </tr>
-            <?php endwhile; ?>
+        <?php $totalPaid = 0; ?>
+<?php foreach ($paid_debts as $row): 
+    $totalPaid += $row['amount']; // Tambahkan ke total
+?>
+<tr class="border-b dark:border-gray-700">
+    <td class="p-3 text-green-500 font-semibold">Rp <?= number_format($row['amount'], 2) ?></td>
+    <td class="p-3"><?= htmlspecialchars($row['description']) ?></td>
+    <td class="p-3">
+        <?= !empty($row['due_date']) ? date("d M Y", strtotime($row['due_date'])) : '-' ?>
+    </td>
+</tr>
+<?php endforeach; ?>
+
         </tbody>
         <tfoot>
             <tr class="bg-green-100 dark:bg-green-900 font-bold">

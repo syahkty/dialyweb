@@ -1,4 +1,9 @@
 <?php
+
+ob_start(); // Menghindari output tak terduga
+header("Content-Type: text/plain"); // Pastikan hanya teks dikirim
+
+
 session_start();
 require 'config.php'; // Koneksi ke database
 
@@ -57,7 +62,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['add_friend'])) {
         $stmt = $pdo->prepare($insertQuery);
         $stmt->execute([$user_id, $friend_id]);
 
-        exit("success");
+        exit(trim("success")); // Pastikan tidak ada spasi ekstra
+
     } else {
         exit("error"); // Username tidak ditemukan
     }
@@ -213,6 +219,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
         })
         .then(response => response.text())
         .then(result => {
+            result = result.trim(); // Hilangkan spasi atau karakter tersembunyi
             console.log("Server Response:", result); // Debugging di Console
             let isDarkMode = document.documentElement.classList.contains('dark'); // Cek mode gelap
             Swal.fire({

@@ -30,7 +30,8 @@ $friend_requests = $stmt->fetchAll();
 
 // Tambah teman via AJAX
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['add_friend'])) {
-    $friend_username = $_POST['friend_username'];
+    $friend_username = trim($_POST['friend_username']);
+    error_log("Mencari username: " . $friend_username);
 
     $query = "SELECT id FROM users WHERE username = ?";
     $stmt = $pdo->prepare($query);

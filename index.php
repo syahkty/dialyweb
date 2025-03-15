@@ -39,6 +39,7 @@ $query = "SELECT tasks.*, schedule.course_name
           WHERE tasks.user_id = :user_id AND tasks.status != 'Selesai' 
           ORDER BY tasks.due_date ASC 
           LIMIT 2";
+
 $stmt = $pdo->prepare($query);
 $stmt->execute(['user_id' => $user_id]);
 $taskresult = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -189,30 +190,31 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
         </h2>
 
         <?php if (count($taskresult) > 0): ?>
-            <ul class="space-y-6">
-            <?php while ($row = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
-                    <li class="flex items-center gap-6 bg-gray-100 dark:bg-gray-800 shadow p-4 rounded-lg hover:scale-105 transform transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
-                        <span class="text-3xl hidden md:flex">📖</span> <!-- Ikon Buku -->
-                        <div>
-                            <p class="text-lg font-semibold"><?= htmlspecialchars($row['title']) ?></p>
-                            <div class="text-sm text-gray-600 dark:text-gray-300 flex gap-2">
-                                🏫 <span class="bg-blue-300 dark:bg-blue-600 text-black dark:text-white px-2 py-1 rounded-md">
-                                    <?= htmlspecialchars($row['course_name']) ?>
-                                </span>
-                                ⏳ <span class="bg-red-300 dark:bg-red-600 text-black dark:text-white px-2 py-1 rounded-md">
-                                    <?= date('d M Y', strtotime($row['due_date'])) ?>
-                                </span>
-                                ✅ <span class="bg-green-300 dark:bg-green-600 text-black dark:text-white px-2 py-1 rounded-md">
-                                    <?= ($row['status'] == 'done') ? 'Selesai' : 'Belum Selesai' ?>
-                                </span>
-                            </div>
-                        </div>
-                    </li>
-                <?php endwhile; ?>
-            </ul>
-        <?php else: ?>
-            <p class="text-gray-500 dark:text-gray-400 text-center">❌ Tidak ada tugas terdekat.</p>
-        <?php endif; ?>
+    <ul class="space-y-6">
+        <?php foreach ($taskresult as $row): ?>
+            <li class="flex items-center gap-6 bg-gray-100 dark:bg-gray-800 shadow p-4 rounded-lg hover:scale-105 transform transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
+                <span class="text-3xl hidden md:flex">📖</span> <!-- Ikon Buku -->
+                <div>
+                    <p class="text-lg font-semibold"><?= htmlspecialchars($row['title']) ?></p>
+                    <div class="text-sm text-gray-600 dark:text-gray-300 flex gap-2">
+                        🏫 <span class="bg-blue-300 dark:bg-blue-600 text-black dark:text-white px-2 py-1 rounded-md">
+                            <?= htmlspecialchars($row['course_name']) ?>
+                        </span>
+                        ⏳ <span class="bg-red-300 dark:bg-red-600 text-black dark:text-white px-2 py-1 rounded-md">
+                            <?= date('d M Y', strtotime($row['due_date'])) ?>
+                        </span>
+                        ✅ <span class="bg-green-300 dark:bg-green-600 text-black dark:text-white px-2 py-1 rounded-md">
+                            <?= ($row['status'] == 'done') ? 'Selesai' : 'Belum Selesai' ?>
+                        </span>
+                    </div>
+                </div>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+<?php else: ?>
+    <p class="text-gray-500 dark:text-gray-400 text-center">❌ Tidak ada tugas terdekat.</p>
+<?php endif; ?>
+
     </div>
 </div>
     <!-- Konten -->

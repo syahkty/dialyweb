@@ -62,6 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['add_friend'])) {
     }
 }
 
+
 // Aksi AJAX untuk menerima atau menghapus teman
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
     $friend_id = $_POST['friend_id'];
@@ -211,6 +212,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
         })
         .then(response => response.text())
         .then(result => {
+            console.log("Server Response:", result); // Debugging di Console
             let isDarkMode = document.documentElement.classList.contains('dark'); // Cek mode gelap
             Swal.fire({
                 title: result === "success" ? "Sukses!" : result === "exists" ? "Info" : "Gagal!",

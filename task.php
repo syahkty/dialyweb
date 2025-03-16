@@ -11,11 +11,18 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id']; // ✅ Pindahkan ini ke awal!
 
 // Ambil tugas yang dibagikan kepada user yang sedang login
-$stmt = $pdo->prepare("SELECT tasks.*, users.username AS sender_name 
-                        FROM shared_tasks 
-                        JOIN tasks ON shared_tasks.task_id = tasks.id 
-                        JOIN users ON shared_tasks.sender_id = users.id 
-                        WHERE shared_tasks.receiver_id = ?");
+$stmt = $pdo->prepare("SELECT 
+    st.id AS shared_task_id,  -- Ambil ID dari shared_tasks
+    t.title, 
+    t.due_date, 
+    t.detail, 
+    u.username AS sender_name, 
+    st.completed_at AS shared_completed_at
+FROM shared_tasks st
+JOIN tasks t ON st.task_id = t.id
+JOIN users u ON st.sender_id = u.id
+WHERE st.receiver_id = ?;
+");
 $stmt->execute([$user_id]);
 $shared_tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -61,6 +68,21 @@ $stmt = $pdo->prepare("SELECT tasks.*, schedule.course_name FROM tasks
                         WHERE tasks.status = 'Selesai' AND tasks.user_id = ?");
 $stmt->execute([$user_id]);
 $done_tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Ambil daftar tugas yang sudah selesai (termasuk tugas sendiri dan tugas yang dibagikan)
+$stmt = $pdo->prepare("
+    SELECT id, title, completed_at FROM tasks 
+    WHERE user_id = ? AND status = 'Selesai'
+    UNION
+    SELECT shared_tasks.id, tasks.title, shared_tasks.completed_at 
+    FROM shared_tasks 
+    JOIN tasks ON shared_tasks.task_id = tasks.id 
+    WHERE shared_tasks.receiver_id = ? AND shared_tasks.completed_at IS NOT NULL
+    ORDER BY completed_at DESC
+");
+$stmt->execute([$user_id, $user_id]);
+$done_tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 
 // Query hanya mengambil jadwal milik user yang login
 $stmt = $pdo->prepare("SELECT * FROM schedule WHERE user_id = ?");
@@ -240,7 +262,6 @@ $schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <button type="submit" name="share_task" class="w-full bg-blue-500 text-white p-5 rounded-md text-xl">Bagikan</button>
 </form>
 
-
 <!-- Tugas yang Dibagikan -->
 <h2 class="text-2xl font-bold mt-6 mb-4">📨 Tugas yang Dibagikan</h2>
 <div class="bg-white dark:bg-gray-800 p-6 rounded-md shadow-md">
@@ -252,6 +273,20 @@ $schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     Dari: <?= htmlspecialchars($row['sender_name']) ?> | ⏳ <?= htmlspecialchars($row['due_date']) ?>
                 </p>
                 <p class="text-gray-700 dark:text-gray-300"><?= htmlspecialchars($row['detail']) ?></p>
+                
+                <!-- Tombol Selesaikan -->
+                <?php if (empty($row['shared_completed_at']) || $row['shared_completed_at'] == "0000-00-00 00:00:00"): ?>
+                    <form action="complete_shared_task.php" method="POST">
+    <input type="hidden" name="shared_task_id" value="<?= $row['shared_task_id'] ?>">
+    <button type="submit" class="mt-3 px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition">
+        ✅ Selesaikan
+    </button>
+</form>
+<p class="text-sm text-gray-500">🆔 ID Shared Task: <?= $row['shared_task_id'] ?></p>
+
+                <?php else: ?>
+                    <p class="text-green-500 font-bold mt-2">✅ Tugas sudah selesai</p>
+                <?php endif; ?>
             </div>
         <?php endforeach; ?>
     <?php else: ?>
@@ -261,6 +296,10 @@ $schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php endif; ?>
 </div>
 
+
+
+
+
     <!-- Tugas Selesai -->
     <h2 class="text-2xl font-bold mt-6 mb-4">✅ Tugas Selesai</h2>
     <div class="space-y-3">
@@ -269,7 +308,7 @@ $schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div>
             <h3 class="font-semibold text-xl"><?= htmlspecialchars($row['title']) ?></h3>
             <p class="text-gray-600 dark:text-gray-400 text-lg">
-                <?= htmlspecialchars($row['course_name']) ?> | ✅ <?= htmlspecialchars($row['completed_at']) ?>
+                <?= htmlspecialchars($row['title']) ?> | ✅ <?= htmlspecialchars($row['completed_at']) ?>
             </p>
         </div>
     </div>

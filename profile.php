@@ -175,9 +175,9 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
             <h2 class="text-lg font-bold mb-4">Konfirmasi Hapus Akun</h2>
             <p>Apakah Anda yakin ingin menghapus akun ini? Tindakan ini tidak bisa dibatalkan.</p>
             <form action="delete_account.php" method="POST">
-                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">❌ Hapus</button>
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Hapus</button>
             </form>
-            <button onclick="toggleModal('delete-modal')" class="mt-2 text-gray-500">Batal</button>
+            <button onclick="toggleModal('delete-modal')" class="mt-2 text-gray-500 bg-green-400 hover:bg-green-500 text-white px-4 py-2 rounded">Batal</button>
         </div>
     </div>
 

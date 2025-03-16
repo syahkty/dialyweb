@@ -161,7 +161,7 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
 
         <?php if (count($scheduleResult) > 0): ?>
             <ul class="space-y-6">
-                    <?php while ($row = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
+            <?php foreach ($scheduleResult as $row): ?>
                     <li class="flex items-center gap-6 bg-gray-100 dark:bg-gray-800 shadow p-4 rounded-lg hover:scale-105 transform transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-700">
                         <span class="text-3xl md:flex hidden">📖</span> <!-- Ikon Buku -->
                         <div>
@@ -176,7 +176,7 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
                             </div>
                         </div>
                     </li>
-                <?php endwhile; ?>
+                <?php endforeach; ?>
             </ul>
         <?php else: ?>
             <p class="text-gray-500 dark:text-gray-400 text-center">❌ Tidak ada jadwal kuliah besok.</p>

@@ -258,16 +258,32 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
         <?php endif; ?>
 
         <!-- Tambahan Card untuk Fitur Teman -->
-        <a href="friends.php" class="glassmorphism p-6 text-gray-800 dark:text-gray-200 shadow-lg hover:scale-105 transform transition-all">
-            <div class="flex items-center gap-3">
-                <span class="text-3xl">👥</span>
-                <h2 class="text-xl font-bold">Teman</h2>
-            </div>
-            <p class="text-sm mt-2">Lihat daftar temanmu dan tambahkan teman baru.</p>
-            <button class="mt-4 px-4 py-2 bg-yellow-500 dark:bg-yellow-700 text-white rounded-lg shadow-md hover:bg-yellow-600 dark:hover:bg-yellow-800 transition">
-                Kelola Teman
-            </button>
-        </a>
+        <?php
+// Ambil jumlah permintaan teman yang pending
+$stmt = $pdo->prepare("SELECT COUNT(*) FROM friends WHERE friend_id = ? AND status = 'pending'");
+$stmt->execute([$user_id]);
+$pending_requests = $stmt->fetchColumn();
+?>
+
+<a href="friends.php" class="relative glassmorphism p-6 text-gray-800 dark:text-gray-200 shadow-lg hover:scale-105 transform transition-all">
+    <div class="flex items-center gap-3">
+        <span class="text-3xl relative">
+            👥
+            <?php if ($pending_requests > 0): ?>
+                <!-- Notifikasi bulat merah -->
+                <span class="absolute top-0 right-0 -mt-2 -mr-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    <?= $pending_requests ?>
+                </span>
+            <?php endif; ?>
+        </span>
+        <h2 class="text-xl font-bold">Teman</h2>
+    </div>
+    <p class="text-sm mt-2">Lihat daftar temanmu dan tambahkan teman baru.</p>
+    <button class="mt-4 px-4 py-2 bg-yellow-500 dark:bg-yellow-700 text-white rounded-lg shadow-md hover:bg-yellow-600 dark:hover:bg-yellow-800 transition">
+        Kelola Teman
+    </button>
+</a>
+
     </div>
 </div>
 

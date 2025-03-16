@@ -203,7 +203,7 @@ $schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <select name="task_id" required class="w-full bg-gray-200 dark:bg-gray-700 p-5 rounded-md text-xl">
         <?php
         // Ambil daftar tugas milik user yang login
-        $stmt = $pdo->prepare("SELECT id, title FROM tasks WHERE user_id = ?");
+        $stmt = $pdo->prepare("SELECT id, title FROM tasks WHERE user_id = ? AND due_date >= CURDATE()");
         $stmt->execute([$user_id]);
         $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
         

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://syahkty.web.id/sitemap.xml

@@ -5,7 +5,7 @@ include "../../config.php";
 if (isset($_POST['add_debt'])) {
     $amount = $_POST['amount'];
     $description = $_POST['description'];
-    $due_date = !empty($_POST['due_date']) ? $_POST['due_date'] : NULL;
+    $due_date = date('Y-m-d');
 
     try {
         $stmt = $pdo->prepare("INSERT INTO debts (amount, description, due_date, status) 

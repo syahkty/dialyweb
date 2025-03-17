@@ -79,7 +79,7 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Class</title>
+    <title>Syahkty Web</title>
     <meta name="description" content="Deskripsi singkat tentang website Anda yang menarik dan relevan.">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>

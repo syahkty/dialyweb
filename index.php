@@ -82,6 +82,8 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
     <title>Syahkty Web</title>
     <meta name="description" content="Deskripsi singkat tentang website Anda yang menarik dan relevan.">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d6efd">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         // Konfigurasi Tailwind agar dark mode pakai class
@@ -290,6 +292,20 @@ $pending_requests = $stmt->fetchColumn();
 </div>
 
     </div>
+<script>
+    if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("js/service-worker.js")
+      .then((registration) => {
+        console.log("Service Worker terdaftar dengan sukses:", registration.scope);
+      })
+      .catch((error) => {
+        console.log("Pendaftaran Service Worker gagal:", error);
+      });
+  });
+}
 
+</script>
 </body>
 </html>

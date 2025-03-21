@@ -1,6 +1,6 @@
 <?php
 session_start();
-include "config.php"; // Pastikan sudah ada koneksi database
+include "/config.php"; // Pastikan sudah ada koneksi database
 
 
 // Cek apakah user sudah login
@@ -82,7 +82,7 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
     <title>Syahkty Web</title>
     <meta name="description" content="Deskripsi singkat tentang website Anda yang menarik dan relevan.">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/manifest.php">
     <meta name="theme-color" content="#0d6efd">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>

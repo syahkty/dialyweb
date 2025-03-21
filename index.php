@@ -1,6 +1,6 @@
 <?php
 session_start();
-include "/config.php"; // Pastikan sudah ada koneksi database
+include "config.php"; // Pastikan sudah ada koneksi database
 
 
 // Cek apakah user sudah login

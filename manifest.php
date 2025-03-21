@@ -15,12 +15,13 @@ $manifest = [
     "description"=> "Aplikasi manajemen tugas dan jadwal",
     "icons"=> [
       [
-        "src"=> "gambar/favicon.png",
+        "src"=> "https://syahkty.web.id/gambar/favicon.png"
+,
         "sizes"=> "192x192",
         "type"=> "image/png"
       ],
       [
-        "src"=> "gambar/favicon.png",
+        "src"=> "https://syahkty.web.id/gambar/favicon.png",
         "sizes"=> "512x512",
         "type"=> "image/png"
       ]

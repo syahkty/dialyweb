@@ -82,10 +82,19 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
     <title>Syahkty Web</title>
     <meta name="description" content="Deskripsi singkat tentang website Anda yang menarik dan relevan.">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="manifest" href="/manifest.php">
     <meta name="theme-color" content="#0d6efd">
+    <link rel="apple-touch-icon" href="https://syahkty.web.id/gambar/favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+        fetch("https://syahkty.web.id/manifest.php")
+        .then(response => response.json())
+        .then(manifest => {
+        const link = document.createElement("link");
+        link.rel = "manifest";
+        link.href = "data:application/json," + encodeURIComponent(JSON.stringify(manifest));
+        document.head.appendChild(link);
+        })
+        .catch(error => console.error("Gagal memuat manifest:", error));
         // Konfigurasi Tailwind agar dark mode pakai class
         tailwind.config = {
             darkMode: 'class'
@@ -294,16 +303,9 @@ $pending_requests = $stmt->fetchColumn();
     </div>
 <script>
     if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("js/service-worker.js")
-      .then((registration) => {
-        console.log("Service Worker terdaftar dengan sukses:", registration.scope);
-      })
-      .catch((error) => {
-        console.log("Pendaftaran Service Worker gagal:", error);
-      });
-  });
+  navigator.serviceWorker.register("/sw.js")
+    .then(reg => console.log("Service Worker berhasil terdaftar!", reg))
+    .catch(err => console.error("Pendaftaran Service Worker gagal:", err));
 }
 
 </script>

@@ -12,7 +12,7 @@ $manifest = [
     "display"=> "standalone",
     "background_color"=> "#ffffff",
     "theme_color"=> "#0d6efd",
-    "description"=> "Aplikasi manajemen tugas dan jadwal",
+    "description"=> "Aplikasi manajemen tugas dan jadwal gacor",
     "icons"=> [
       [
         "src"=> "https://syahkty.web.id/gambar/favicon.png"

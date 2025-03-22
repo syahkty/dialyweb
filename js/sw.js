@@ -3,10 +3,6 @@ self.addEventListener("install", event => {
       caches.open("tuku-cache-v1").then(cache => {
         return cache.addAll([
           "/index.php",
-          "/login.php",
-          "/profil.php",
-          "/schedule.php",
-          "https://syahkty.web.id/gambar/favicon.png"
         ]);
       })
     );

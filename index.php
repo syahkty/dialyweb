@@ -303,7 +303,7 @@ $pending_requests = $stmt->fetchColumn();
     </div>
 <script>
     if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js")
+  navigator.serviceWorker.register("/js/sw.js")
     .then(reg => console.log("Service Worker berhasil terdaftar!", reg))
     .catch(err => console.error("Pendaftaran Service Worker gagal:", err));
 }

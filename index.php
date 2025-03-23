@@ -245,7 +245,7 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
             </button>
         </a>
         
-        <a href="schedule.php" class="glassmorphism p-6 text-gray-800 dark:text-gray-200 shadow-lg hover:scale-105 transform transition-all">
+        <a href="schedule/schedule.php" class="glassmorphism p-6 text-gray-800 dark:text-gray-200 shadow-lg hover:scale-105 transform transition-all">
             <div class="flex items-center gap-3">
                 <span class="text-3xl">📅</span>
                 <h2 class="text-xl font-bold">Jadwal Kuliah</h2>
@@ -258,7 +258,7 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
 
         <!-- Hanya tampil jika user_id = 1 -->
         <?php if ($user_id == 1): ?>
-            <a href="project.html" class="glassmorphism p-6 text-gray-800 dark:text-gray-200 shadow-lg hover:scale-105 transform transition-all">
+            <a href="project/project.html" class="glassmorphism p-6 text-gray-800 dark:text-gray-200 shadow-lg hover:scale-105 transform transition-all">
                 <div class="flex items-center gap-3">
                     <span class="text-3xl">🛠️</span>
                     <h2 class="text-xl font-bold">Proyek & Eksperimen</h2>

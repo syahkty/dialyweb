@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'config.php'; // Sesuaikan koneksi database
+require '../config.php'; // Sesuaikan koneksi database
 
 $user_id = $_SESSION['user_id']; // Ambil ID user yang login
 

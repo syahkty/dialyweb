@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username']; // ✅ Pastikan username tersimpan di sesi
 
-        header("Location: index.php");
+        header("Location: ../index.php");
         exit();
     } else {
         $error = "Username atau password salah!";

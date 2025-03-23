@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'config.php'; // Pastikan konfigurasi database sudah benar
+require '../config.php'; // Pastikan konfigurasi database sudah benar
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $bio = $_POST['bio'] ?? ''; // Pastikan nilai tidak null

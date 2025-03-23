@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'config.php'; // Sesuaikan dengan koneksi databasenya
+require '../config.php'; // Sesuaikan dengan koneksi databasenya
 
 $user_id = $_SESSION['user_id']; // Ambil user_id dari sesi login
 
@@ -100,7 +100,7 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
             <span id="darkModeIcon">🌙</span>
         </button>
     </div>
-    <a href="index.php" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md mb-6 inline-block">⬅ Kembali</a>
+    <a href="../index.php" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md mb-6 inline-block">⬅ Kembali</a>
    <!-- Foto Profil dengan Event Tekan Lama -->
 <div class="flex flex-col items-center space-y-4">
     <div class="relative w-32 h-32 rounded-full overflow-hidden border-4 border-gray-300 dark:border-gray-600">
@@ -151,7 +151,7 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
         <!-- Pengaturan Akun -->
         <div class="mt-6 p-4 bg-white dark:bg-gray-800 shadow rounded-lg">
             <h3 class="text-lg font-semibold mb-4">Pengaturan Akun</h3>
-            <a href="logout.php" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Logout</a>
+            <a href="../account/logout.php" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Logout</a>
             <button onclick="toggleModal('reset-modal')" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 mb-2 rounded">🔑 Reset Kata Sandi</button>
             <button onclick="toggleModal('delete-modal')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">❌ Hapus Akun</button>
         </div>

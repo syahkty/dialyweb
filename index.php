@@ -5,7 +5,7 @@ include "config.php"; // Pastikan sudah ada koneksi database
 
 // Cek apakah user sudah login
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: account/login.php");
     exit();
 }
 
@@ -234,7 +234,7 @@ $avatar = (!empty($user['profile_picture']) && file_exists("uploads/" . $user['p
     <div class="flex flex-col items-center justify-center p-10">
     <!-- Grid Menu -->
     <div class="grid gap-6 sm:grid-cols-2 <?php echo $gridClass; ?> w-full max-w-4xl">
-        <a href="task.php" class="glassmorphism p-6 text-gray-800 dark:text-gray-200 shadow-lg hover:scale-105 transform transition-all">
+        <a href="task/task.php" class="glassmorphism p-6 text-gray-800 dark:text-gray-200 shadow-lg hover:scale-105 transform transition-all">
             <div class="flex items-center gap-3">
                 <span class="text-3xl">📚</span>
                 <h2 class="text-xl font-bold">Tugas Kuliahan</h2>
@@ -278,7 +278,7 @@ $stmt->execute([$user_id]);
 $pending_requests = $stmt->fetchColumn();
 ?>
 
-<a href="friends.php" class="relative glassmorphism p-6 text-gray-800 dark:text-gray-200 shadow-lg hover:scale-105 transform transition-all">
+<a href="friends/friends.php" class="relative glassmorphism p-6 text-gray-800 dark:text-gray-200 shadow-lg hover:scale-105 transform transition-all">
     <div class="flex items-center gap-3">
         <span class="text-3xl relative">
             👥

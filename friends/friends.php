@@ -1,9 +1,6 @@
 <?php
-
-
-
 session_start();
-require 'config.php'; // Koneksi ke database
+require '../config.php'; // Koneksi ke database
 
 $user_id = $_SESSION['user_id'] ?? null;
 if (!$user_id) {
@@ -34,6 +31,18 @@ $friend_requests = $stmt->fetchAll();
 // Tambah teman via AJAX
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['add_friend'])) {
     $friend_username = trim($_POST['friend_username']);
+
+    // Cek apakah pengguna mencoba menambahkan diri sendiri
+    $query = "SELECT id, username FROM users WHERE id = ?";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$user_id]);
+    $currentUser = $stmt->fetch(); 
+
+    if ($currentUser && strcasecmp($friend_username, $currentUser['username']) === 0) {
+        exit("self"); // Tidak bisa menambahkan diri sendiri
+    }
+    
+
     error_log("Mencari username: " . $friend_username);
 
     $query = "SELECT id FROM users WHERE username = ?";
@@ -66,6 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['add_friend'])) {
         exit("error"); // Username tidak ditemukan
     }
 }
+
 
 
 // Aksi AJAX untuk menerima atau menghapus teman
@@ -152,7 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
         </button>
     </div>
 
-    <a href="index.php" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md mb-6 inline-block">⬅ Kembali</a>
+    <a href="../index.php" class="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md mb-6 inline-block">⬅ Kembali</a>
 
         <!-- Form Tambah Teman -->
         <form id="addFriendForm" class="mb-6">
@@ -206,33 +216,42 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['action'])) {
 
     <script>
     document.getElementById("addFriendForm").addEventListener("submit", function(event) {
-        event.preventDefault(); // Mencegah reload halaman
+    event.preventDefault(); // Mencegah reload halaman
 
-        let username = document.getElementById("friend_username").value;
+    let username = document.getElementById("friend_username").value;
 
-        fetch("friends.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: `add_friend=1&friend_username=${encodeURIComponent(username)}`
-        })
-        .then(response => response.text())
-        .then(result => {
-            result = result.trim(); // Hilangkan spasi atau karakter tersembunyi
-            console.log("Server Response:", result); // Debugging di Console
-            let isDarkMode = document.documentElement.classList.contains('dark'); // Cek mode gelap
-            Swal.fire({
-                title: result === "success" ? "Sukses!" : result === "exists" ? "Info" : "Gagal!",
-                text: result === "success" ? "Permintaan pertemanan terkirim!" 
-                     : result === "exists" ? "Kamu sudah berteman atau ada permintaan yang tertunda." 
-                     : "Username tidak ditemukan!",
-                icon: result === "success" ? "success" : result === "exists" ? "info" : "error",
-                background: isDarkMode ? '#1E293B' : '#ffffff', // Warna dark/light mode
-                color: isDarkMode ? '#ffffff' : '#000000' // Warna teks dark/light mode
-            }).then(() => {
-                if (result === "success") location.reload(); // Reload jika sukses
-            });
+    fetch("friends.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `add_friend=1&friend_username=${encodeURIComponent(username)}`
+    })
+    .then(response => response.text())
+    .then(result => {
+        result = result.trim(); // Hilangkan spasi atau karakter tersembunyi
+        console.log("Server Response:", result); // Debugging di Console
+        let isDarkMode = document.documentElement.classList.contains('dark'); // Cek mode gelap
+
+        Swal.fire({
+            title: result === "success" ? "Sukses!" 
+                 : result === "exists" ? "Info" 
+                 : result === "self" ? "Oops!" 
+                 : "Gagal!",
+            text: result === "success" ? "Permintaan pertemanan terkirim!" 
+                 : result === "exists" ? "Kamu sudah berteman atau ada permintaan yang tertunda." 
+                 : result === "self" ? "Kamu tidak bisa menambahkan diri sendiri sebagai teman!" 
+                 : "Username tidak ditemukan!",
+            icon: result === "success" ? "success" 
+                 : result === "exists" ? "info" 
+                 : result === "self" ? "warning" 
+                 : "error",
+            background: isDarkMode ? '#1E293B' : '#ffffff', // Warna dark/light mode
+            color: isDarkMode ? '#ffffff' : '#000000' // Warna teks dark/light mode
+        }).then(() => {
+            if (result === "success") location.reload(); // Reload jika sukses
         });
     });
+});
+
 
     function confirmAction(action, friend_id) {
         let message = action === 'accept' ? "Terima permintaan pertemanan?" : "Hapus teman?";

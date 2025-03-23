@@ -1,5 +1,5 @@
 <?php
-require 'config.php'; // Pastikan koneksi database ada
+require '../config.php'; // Pastikan koneksi database ada
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['shared_task_id'])) {
     $shared_task_id = intval($_POST['shared_task_id']); // Pastikan input adalah angka

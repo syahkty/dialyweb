@@ -1,5 +1,5 @@
 <?php
-include "config.php"; // Pastikan path ke config.php benar
+include "../config.php"; // Pastikan path ke config.php benar
 session_start();
 
 $login_url = $client->createAuthUrl();

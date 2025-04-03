@@ -290,10 +290,7 @@
         let player = new YT.Player("ytPlayer", {
           events: {
             onReady: function (event) {
-              if (!sessionStorage.getItem("videoPlayed")) {
                 event.target.playVideo(); // Memulai video
-                sessionStorage.setItem("videoPlayed", "true"); // Tandai sudah diputar
-              }
             },
           },
         });

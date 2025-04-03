@@ -302,6 +302,8 @@
       }
 
       function showGreeting() {
+        createBalloons()
+        createConfetti()
         document.querySelector(".intro").classList.add("hidden");
         setTimeout(() => {
           document.querySelector(".intro").style.display = "none";
@@ -312,8 +314,6 @@
           video.play(); // Menjalankan video otomatis
         }, 1000);
 
-        createBalloons()
-        createConfetti()
       }
 
       function playSound() {

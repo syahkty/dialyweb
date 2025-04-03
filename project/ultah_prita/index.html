@@ -91,7 +91,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        height: 140vh;
+        height: 120vh;
         background-color: #ffcccb;
         text-align: center;
         padding: 20px;
@@ -117,6 +117,10 @@
         color: #333;
         margin-bottom: 20px;
         line-height: 1.6;
+      }
+
+      .watermark{
+        margin-top: 40px;
       }
       @keyframes fadeIn {
         from {
@@ -240,6 +244,9 @@
         p {
           font-size: 1rem;
         }
+        .watermark {
+            margin-top: 180px;
+        }
       }
       @media (max-width: 480px) {
         .heart-button {
@@ -284,7 +291,7 @@
           ></iframe>
         </div>
       </div>
-      <p style="color: #ff4d8c; margin-top: 20px; font-weight: 100; font-size: smaller;">Syahkty Yang Bikin</p>
+      <p class="watermark" style="color: #ff4d8c; font-weight: 100; font-size: smaller;">Syahkty Yang Bikin</p>
     </div>
     <script>
       function playVideo() {

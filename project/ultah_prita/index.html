@@ -280,15 +280,10 @@
         <p>Happy Birthday My Wonderfull Person</p>
         <h1>Prita Eky Trihapsari Sengkuuuu❤️❤️</h1>
         <div class="video-container">
-          <iframe
-            id="ytPlayer"
-            src="https://www.youtube.com/embed/90w2RegGf9w?enablejsapi=1"
-            title="YouTube video player"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin"
-            allowfullscreen
-          ></iframe>
+          <video id="videoPlayer" width="100%" height="auto" autoplay>
+            <source src="videos/ultahh.mp4" type="video/mp4" />
+            Browser Anda tidak mendukung video HTML5.
+          </video>
         </div>
       </div>
       <p
@@ -299,36 +294,7 @@
       </p>
     </div>
     <script>
-      function playVideo() {
-        let player = new YT.Player("ytPlayer", {
-          videoId: "90w2RegGf9w", // Pastikan videoId yang benar
-          events: {
-            onReady: function (event) {
-              if (!sessionStorage.getItem("videoPlayed")) {
-                event.target.playVideo(); // Memulai video
-                sessionStorage.setItem("videoPlayed", "true"); // Set videoPlayed untuk hanya play sekali
-              }
-            },
-          },
-        });
-      }
 
-      // Memuat API YouTube dan menjalankan playVideo setelah API siap
-      let tag = document.createElement("script");
-      tag.src = "https://www.youtube.com/iframe_api";
-      let firstScriptTag = document.getElementsByTagName("script")[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-      function onYouTubeIframeAPIReady() {
-        var player = new YT.Player("ytPlayer", {
-          videoId: "90w2RegGf9w",
-          events: {
-            onReady: function (event) {
-              event.target.playVideo();
-            },
-          },
-        });
-      }
 
       function playSound() {
         document.getElementById("clickSound").play();
@@ -339,9 +305,16 @@
         setTimeout(() => {
           document.querySelector(".intro").style.display = "none";
           document.querySelector(".greeting").classList.add("active");
+
+          // Memutar video
+          const video = document.getElementById("videoPlayer");
+          video.play(); // Menjalankan video otomatis
         }, 1000);
-        createConfetti();
-        createBalloons();
+      }
+
+      function playSound() {
+        const sound = document.getElementById("clickSound");
+        sound.play();
       }
 
       function createConfetti() {

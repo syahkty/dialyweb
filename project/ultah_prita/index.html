@@ -119,7 +119,7 @@
         line-height: 1.6;
       }
 
-      .watermark{
+      .watermark {
         margin-top: 40px;
       }
       @keyframes fadeIn {
@@ -245,7 +245,7 @@
           font-size: 1rem;
         }
         .watermark {
-            margin-top: 180px;
+          margin-top: 180px;
         }
       }
       @media (max-width: 480px) {
@@ -291,14 +291,21 @@
           ></iframe>
         </div>
       </div>
-      <p class="watermark" style="color: #ff4d8c; font-weight: 100; font-size: smaller;">Syahkty Yang Bikin</p>
+      <p
+        class="watermark"
+        style="color: #ff4d8c; font-weight: 100; font-size: smaller"
+      >
+        Syahkty Yang Bikin
+      </p>
     </div>
     <script>
       function playVideo() {
         let player = new YT.Player("ytPlayer", {
           events: {
             onReady: function (event) {
+              if (!sessionStorage.getItem("videoPlayed")) {
                 event.target.playVideo(); // Memulai video
+              }
             },
           },
         });

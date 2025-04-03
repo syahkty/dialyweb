@@ -301,10 +301,12 @@
     <script>
       function playVideo() {
         let player = new YT.Player("ytPlayer", {
+          videoId: "90w2RegGf9w", // Pastikan videoId yang benar
           events: {
             onReady: function (event) {
               if (!sessionStorage.getItem("videoPlayed")) {
                 event.target.playVideo(); // Memulai video
+                sessionStorage.setItem("videoPlayed", "true"); // Set videoPlayed untuk hanya play sekali
               }
             },
           },
@@ -318,7 +320,14 @@
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
       function onYouTubeIframeAPIReady() {
-        playVideo();
+        var player = new YT.Player("ytPlayer", {
+          videoId: "90w2RegGf9w",
+          events: {
+            onReady: function (event) {
+              event.target.playVideo();
+            },
+          },
+        });
       }
 
       function playSound() {

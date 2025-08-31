@@ -149,6 +149,21 @@ if (isset($_POST['update_schedule'])) {
     </script>
 </head>
 <body class="bg-white text-black p-8 dark:bg-gray-900 dark:text-white transition-colors duration-300">
+    <?php // Pastikan session_start() sudah ada di paling atas file schedule.php ?>
+
+<?php if (isset($_SESSION['success_message'])): ?>
+    <div class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800" role="alert">
+        <?= $_SESSION['success_message'] ?>
+    </div>
+    <?php unset($_SESSION['success_message']); ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['error_message'])): ?>
+    <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
+        <?= $_SESSION['error_message'] ?>
+    </div>
+    <?php unset($_SESSION['error_message']); ?>
+<?php endif; ?>
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-center">📅 Jadwal Mata Kuliah</h1>
         <button onclick="toggleDarkMode()" class="text-2xl focus:outline-none transition">
@@ -182,6 +197,26 @@ if (isset($_POST['update_schedule'])) {
             </div>
         </form>
     </div>
+<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+  <h2 class="text-xl font-bold mb-2">📥 Impor Jadwal dari JSON</h2>
+  <p class="mb-4 text-gray-600 dark:text-gray-400">
+    Unggah file <code>.json</code> berisi daftar jadwal (array of objects).
+  </p>
+  <form action="upload_json_handler.php" method="post" enctype="multipart/form-data">
+    <input type="file" name="schedule_json" accept=".json,application/json" required
+      class="block w-full text-sm text-gray-500
+             file:mr-4 file:py-2 file:px-4
+             file:rounded-full file:border-0
+             file:text-sm file:font-semibold
+             file:bg-emerald-50 file:text-emerald-700
+             hover:file:bg-emerald-100 mb-4" />
+    <button type="submit" name="import_schedule_json"
+      class="bg-emerald-500 hover:bg-emerald-600 text-white p-3 rounded-md w-full">
+      🚀 Impor JSON
+    </button>
+  </form>
+</div>
+
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
     <?php foreach ($schedules as $row): ?>
